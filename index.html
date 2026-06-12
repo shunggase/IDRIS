@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Flex Message Dashboard</title>
+    <!-- ใช้ Bootstrap 5 แต่งหน้าตาเว็บให้สวยงามและรองรับมือถือ -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <!-- ดึง LINE LIFF SDK -->
+    <script src="https://line-scdn.net"></script>
+    <style>
+        body { bg-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4 bg-white">
+                <h3 class="text-center mb-4 text-success font-weight-bold">Flex Message Dashboard</h3>
+                
+                <!-- ส่วนแสดงสถานะการล็อกอิน -->
+                <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
+                    <div>
+                        <span class="fw-bold">สถานะ:</span> 
+                        <span id="loginStatus" class="text-danger">ยังไม่ได้เข้าสู่ระบบ</span>
+                    </div>
+                    <div>
+                        <button id="btnLogin" class="btn btn-success" onclick="liffLogin()">Log in ด้วย LINE</button>
+                        <button id="btnLogout" class="btn btn-outline-danger" onclick="liffLogout()" style="display:none;">Log out</button>
+                    </div>
+                </div>
+
+                <!-- ส่วนกรอกข้อมูล Flex Message -->
+                <div class="mb-3">
+                    <label for="flexJson" class="form-label fw-bold">วางโค้ด Flex Message (JSON)</label>
+                    <textarea id="flexJson" class="form-control" rows="10" placeholder='{"type": "bubble", "body": { "type": "box", "layout": "vertical", "contents": [{"type": "text", "text": "Hello World"}]}}'></textarea>
+                </div>
+
+                <!-- ปุ่มส่งข้อความ -->
+                <div class="d-grid gap-2">
+                    <button id="btnSend" class="btn btn-primary btn-lg" onclick="sendFlexMessage()" disabled>ส่ง Flex Message เข้า LINE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ⚠️ ใส่ LIFF ID ที่ได้จาก LINE Developers ตรงนี้
+const myLiffId = 'ใส่_LIFF_ID_ของคุณที่นี่'; 
+
+async function initLiff() {
+    try {
+        await liff.init({ liffId: myLiffId });
+        if (liff.isLoggedIn()) {
+            document.getElementById('btnLogin').style.display = 'none';
+            document.getElementById('btnLogout').style.display = 'block';
+            document.getElementById('btnSend').disabled = false;
+            document.getElementById('loginStatus').innerText = 'เข้าสู่ระบบแล้ว';
+            document.getElementById('loginStatus').className = 'text-success fw-bold';
+        }
+    } catch (error) {
+        console.error('LIFF Initialization failed', error);
+    }
+}
+
+function liffLogin() { liff.login(); }
+function liffLogout() { liff.logout(); window.location.reload(); }
+
+async function sendFlexMessage() {
+    const jsonStr = document.getElementById('flexJson').value;
+    if (!jsonStr.trim()) {
+        alert('กรุณาใส่โค้ด JSON ก่อนครับ');
+        return;
+    }
+
+    try {
+        const flexContent = JSON.parse(jsonStr);
+        
+        // ส่งข้อความ (ต้องเปิดเว็บบนแอป LINE เท่านั้นถึงจะใช้ฟังก์ชันนี้ได้)
+        await liff.sendMessages([{
+            type: "flex",
+            altText: "คุณได้รับ Flex Message ใหม่",
+            contents: flexContent
+        }]);
+        alert('ส่ง Flex Message สำเร็จแล้ว!');
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด: ' + error.message + '\nตรวจสอบว่ารูปแบบ JSON ถูกต้องหรือไม่');
+    }
+}
+
+// เริ่มทำงานเมื่อโหลดหน้าเว็บ
+initLiff();
+</script>
+
+</body>
+</html>
