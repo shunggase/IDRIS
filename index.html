@@ -3,72 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINE Flex Message Dashboard</title>
-    <!-- ใช้ Bootstrap 5 แต่งหน้าตาเว็บให้สวยงามและรองรับมือถือ -->
+    <title>เข้าสู่ระบบ | IDRIS Style Flex Dashboard</title>
+    <!-- ใช้ Bootstrap 5 และ Font Awesome สำหรับไอคอน -->
     <link href="https://jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
     <!-- ดึง LINE LIFF SDK -->
     <script src="https://line-scdn.net"></script>
+    
     <style>
-        body { bg-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card { border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        body {
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+            font-family: 'ChulaCharasNew', 'Helvetica Neue', Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 15px;
+        }
+        .card {
+            background: #1b263b;
+            border: 1px solid #415a77;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .ccib-logo {
+            font-size: 50px;
+            color: #00b4d8;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+        }
+        .form-control {
+            background-color: #0d1b2a;
+            border: 1px solid #415a77;
+            color: #fff;
+        }
+        .form-control:focus {
+            background-color: #0d1b2a;
+            border-color: #00b4d8;
+            color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(0, 180, 216, 0.25);
+        }
+        .btn-ccib {
+            background-color: #0077b6;
+            color: white;
+            border: none;
+        }
+        .btn-ccib:hover {
+            background-color: #0096c7;
+            color: white;
+        }
+        .dashboard-container {
+            max-width: 800px;
+            width: 100%;
+            display: none; /* ซ่อนแดชบอร์ดไว้ก่อนล็อกอิน */
+        }
+        footer {
+            font-size: 12px;
+            color: #778da9;
+        }
     </style>
 </head>
 <body>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card p-4 bg-white">
-                <h3 class="text-center mb-4 text-success font-weight-bold">Flex Message Dashboard</h3>
-                
-                <!-- ส่วนแสดงสถานะการล็อกอิน -->
-                <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
-                    <div>
-                        <span class="fw-bold">สถานะ:</span> 
-                        <span id="loginStatus" class="text-danger">ยังไม่ได้เข้าสู่ระบบ</span>
-                    </div>
-                    <div>
-                        <button id="btnLogin" class="btn btn-success" onclick="liffLogin()">Log in ด้วย LINE</button>
-                        <button id="btnLogout" class="btn btn-outline-danger" onclick="liffLogout()" style="display:none;">Log out</button>
-                    </div>
-                </div>
-
-                <!-- ส่วนกรอกข้อมูล Flex Message -->
-                <div class="mb-3">
-                    <label for="flexJson" class="form-label fw-bold">วางโค้ด Flex Message (JSON)</label>
-                    <textarea id="flexJson" class="form-control" rows="10" placeholder='{"type": "bubble", "body": { "type": "box", "layout": "vertical", "contents": [{"type": "text", "text": "Hello World"}]}}'></textarea>
-                </div>
-
-                <!-- ปุ่มส่งข้อความ -->
-                <div class="d-grid gap-2">
-                    <button id="btnSend" class="btn btn-primary btn-lg" onclick="sendFlexMessage()" disabled>ส่ง Flex Message เข้า LINE</button>
+<!-- ================= หน้าจอเข้าสู่ระบบ (IDRIS LOGIN VIEW) ================= -->
+<div id="loginSection" class="login-container">
+    <div class="card p-4 text-center">
+        <div class="mb-3">
+            <i class="fa-solid px-2 fa-shield-halved ccib-logo"></i>
+        </div>
+        <h5 class="fw-bold mb-1 text-white">เข้าสู่ระบบ IDRIS APPS</h5>
+        <p class="text-muted small mb-4">จัดการระบบด้วยบัญชีที่ได้รับสิทธิ์</p>
+        
+        <div class="text-start">
+            <div class="mb-3">
+                <label class="form-label small text-uppercase tracking-wider">อีเมล</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="name@domain.com">
                 </div>
             </div>
+            <div class="mb-4">
+                <label class="form-label small text-uppercase tracking-wider">รหัสผ่าน</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••••">
+                </div>
+            </div>
+            <button class="btn btn-ccib w-100 py-2 fw-bold mb-3" onclick="checkLogin()"><i class="fa-solid fa-right-to-bracket me-2"></i>เข้าสู่ระบบ</button>
+        </div>
+        
+        <footer class="mt-2">
+            © Intelligent Digital Response & Investigation System | IDRIS
+        </footer>
+    </div>
+</div>
+
+<!-- ================= หน้าจอจัดการระบบ (FLEX DASHBOARD VIEW) ================= -->
+<div id="dashboardSection" class="container dashboard-container py-4">
+    <div class="card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-shield-halved text-info fs-3 me-2"></i>
+                <h4 class="m-0 text-white fw-bold">Flex Message Dashboard</h4>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" onclick="logout()"><i class="fa-solid fa-power-off me-1"></i> ออกจากระบบ</button>
+        </div>
+
+        <!-- แท็บสเตตัส LINE LIFF -->
+        <div class="p-3 mb-4 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fa-brands fa-line text-success fs-4 me-2 align-middle"></i>
+                <span class="small text-muted">LINE Login Status:</span>
+                <span id="liffStatus" class="fw-bold ms-1 text-warning">กำลังตรวจสอบระบบ LINE...</span>
+            </div>
+            <button id="btnLineLogin" class="btn btn-success btn-sm" onclick="lineLogin()" style="display:none;">เชื่อมต่อแอป LINE</button>
+        </div>
+
+        <!-- ฟอร์ม JSON -->
+        <div class="mb-3">
+            <label class="form-label fw-bold text-info"><i class="fa-solid fa-code me-1"></i> วางโค้ด Flex Message (JSON)</label>
+            <textarea id="flexJson" class="form-control family-monospace" rows="10" style="background:#0d1b2a; color:#00f5d4;" placeholder='{"type": "bubble", "body": { "type": "box", "layout": "vertical", "contents": [{"type": "text", "text": "Hello CCIB"}]}}'></textarea>
+        </div>
+
+        <div class="d-grid">
+            <button id="btnSend" class="btn btn-primary btn-lg fw-bold" onclick="sendFlexMessage()" disabled>
+                <i class="fa-solid fa-paper-plane me-2"></i>ส่ง Flex Message เข้า LINE
+            </button>
         </div>
     </div>
 </div>
 
 <script>
+// 🔒 ตั้งค่าบัญชีล็อกอินหน้าเว็บ (แก้ไขตรงนี้ได้ตามต้องการ)
+const AUTH_EMAIL = "shunggase@gmail.com";
+const AUTH_PASSWORD = "IDRIS1219";
+
 // ⚠️ ใส่ LIFF ID ที่ได้จาก LINE Developers ตรงนี้
 const myLiffId = '2010383431-NwcATXJE'; 
 
+// ฟังก์ชันตรวจสอบการล็อกอินเข้าหน้าเว็บ
+function checkLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPassword').value;
+
+    if(email === AUTH_EMAIL && pass === AUTH_PASSWORD) {
+        // ถ้ารหัสถูกต้อง สลับไปหน้าแดชบอร์ด
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('dashboardSection').style.display = 'block';
+        // เคลียร์ตำแหน่งการจัดวาง body ใหม่
+        document.body.style.display = 'block';
+        document.body.style.height = 'auto';
+        
+        // เริ่มรันระบบ LINE LIFF หลังล็อกอินผ่าน
+        initLiff();
+    } else {
+        alert("ขออภัย บัญชีของคุณไม่ได้รับสิทธิ์เข้าใช้งานระบบ");
+    }
+}
+
+// ฟังก์ชันออกจากระบบหน้าเว็บ
+function logout() {
+    if(liff.isLoggedIn()) { liff.logout(); }
+    window.location.reload();
+}
+
+// เริ่มต้นระบบ LINE LIFF 
 async function initLiff() {
     try {
         await liff.init({ liffId: myLiffId });
         if (liff.isLoggedIn()) {
-            document.getElementById('btnLogin').style.display = 'none';
-            document.getElementById('btnLogout').style.display = 'block';
+            document.getElementById('btnLineLogin').style.display = 'none';
             document.getElementById('btnSend').disabled = false;
-            document.getElementById('loginStatus').innerText = 'เข้าสู่ระบบแล้ว';
-            document.getElementById('loginStatus').className = 'text-success fw-bold';
+            document.getElementById('liffStatus').innerText = 'เชื่อมต่อกับ LINE สำเร็จ';
+            document.getElementById('liffStatus').className = 'fw-bold ms-1 text-success';
+        } else {
+            document.getElementById('btnLineLogin').style.display = 'inline-block';
+            document.getElementById('liffStatus').innerText = 'กรุณาเชื่อมต่อบัญชี LINE';
+            document.getElementById('liffStatus').className = 'fw-bold ms-1 text-danger';
         }
     } catch (error) {
         console.error('LIFF Initialization failed', error);
     }
 }
 
-function liffLogin() { liff.login(); }
-function liffLogout() { liff.logout(); window.location.reload(); }
+function lineLogin() { liff.login(); }
 
 async function sendFlexMessage() {
     const jsonStr = document.getElementById('flexJson').value;
@@ -79,21 +202,16 @@ async function sendFlexMessage() {
 
     try {
         const flexContent = JSON.parse(jsonStr);
-        
-        // ส่งข้อความ (ต้องเปิดเว็บบนแอป LINE เท่านั้นถึงจะใช้ฟังก์ชันนี้ได้)
         await liff.sendMessages([{
             type: "flex",
-            altText: "คุณได้รับ Flex Message ใหม่",
+            altText: "คุณได้รับข่าวสารใหม่จากระบบ",
             contents: flexContent
         }]);
         alert('ส่ง Flex Message สำเร็จแล้ว!');
     } catch (error) {
-        alert('เกิดข้อผิดพลาด: ' + error.message + '\nตรวจสอบว่ารูปแบบ JSON ถูกต้องหรือไม่');
+        alert('เกิดข้อผิดพลาด: ' + error.message + '\nกรุณาตรวจเช็คไวยากรณ์ JSON');
     }
 }
-
-// เริ่มทำงานเมื่อโหลดหน้าเว็บ
-initLiff();
 </script>
 
 </body>
