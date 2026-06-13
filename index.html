@@ -1,598 +1,218 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>LINE Flex Image Preview | CCIB APPS</title>
-
-  <!-- Fonts & Icons -->
-  <link href="css/fontawesome/css/fontawesome.min.css" rel="stylesheet">
-  <link href="css/fontawesome/css/duotone.min.css" rel="stylesheet">
-  <link href="css/fontawesome/css/brands.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <!-- CSS -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/mdb.min.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
-
-  <style>
-    [v-cloak]{display:none;}
-    body {
-      font-family:'Kanit',sans-serif;
-      background:
-        linear-gradient(135deg, rgba(237, 247, 241, 0.94), rgba(247, 251, 255, 0.98) 48%, rgba(255, 245, 240, 0.94)),
-        url("login.png") center/cover no-repeat fixed;
-      color:#263238;
-      min-height:100vh;
-    }
-    .app-shell {
-      width:100%;
-      max-width:1120px;
-      margin:0 auto;
-      padding:24px 16px 36px;
-    }
-    .app-navbar {
-      background:rgba(255,255,255,0.96);
-      border:1px solid rgba(57,91,74,0.14);
-      border-radius:8px;
-      box-shadow:0 16px 38px rgba(31,45,38,0.12);
-      padding:12px 16px;
-    }
-    .navbar-light .navbar-brand,
-    .navbar-light .navbar-nav .nav-link {
-      color:#263238;
-    }
-    .navbar-light .navbar-nav .nav-link:hover,
-    .navbar-light .navbar-nav .nav-link:focus {
-      color:#2f6f4e;
-    }
-    .navbar-light .navbar-toggler {
-      border-color:#cdd9d2;
-    }
-    .brand-wrap {
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-    .brand-mark {
-      width:48px;
-      height:48px;
-      border:1px solid #e4ebe1;
-      border-radius:8px;
-      background:#fff;
-      object-fit:contain;
-      padding:5px;
-    }
-    .brand-title {
-      display:block;
-      font-size:1rem;
-      font-weight:500;
-      line-height:1.2;
-    }
-    .brand-subtitle {
-      display:block;
-      color:#60706a;
-      font-size:.82rem;
-      line-height:1.2;
-    }
-    .user-menu {
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color:#263238;
-    }
-    .user-name {
-      font-weight:500;
-    }
-    #pictureUrl {
-      width:38px;
-      height:38px;
-      object-fit:cover;
-      border:2px solid #e4ebe1;
-    }
-    .workspace-card {
-      background:rgba(255,255,255,0.96);
-      border:1px solid rgba(57,91,74,0.14);
-      border-radius:8px;
-      box-shadow:0 22px 55px rgba(31,45,38,0.16);
-      overflow:hidden;
-    }
-    .workspace-header {
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:18px 22px;
-      border-bottom:1px solid #e4ebe1;
-      background:#fbfdfb;
-    }
-    .workspace-title {
-      margin:0;
-      font-size:1.15rem;
-      font-weight:500;
-      color:#263238;
-    }
-    .workspace-copy {
-      margin:4px 0 0;
-      color:#60706a;
-      font-size:.92rem;
-    }
-    .line-actions {
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .line-actions img {
-      height:32px;
-      border-radius:8px;
-    }
-    .workspace-body {
-      padding:24px 22px;
-    }
-    .form-group label {
-      color:#42524b;
-      font-weight:500;
-    }
-    .form-control {
-      min-height:46px;
-      border:1px solid #cdd9d2;
-      border-radius:8px;
-      box-shadow:none;
-    }
-    .form-control:focus {
-      border-color:#2f6f4e;
-      box-shadow:0 0 0 .2rem rgba(47,111,78,.14);
-    }
-    .action-bar {
-      display:flex;
-      flex-wrap:wrap;
-      justify-content:center;
-      gap:10px;
-      margin:20px 0;
-    }
-    .action-btn {
-      min-width:120px;
-      background:#ffffff !important;
-      color:#263238 !important;
-      border:1px solid #cdd9d2 !important;
-      border-radius:8px !important;
-      padding:10px 16px;
-      box-shadow:0 8px 18px rgba(31,45,38,0.08);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:500;
-      transition:all .2s ease;
-    }
-    .action-btn:hover {
-      background:#f4f8f5 !important;
-      border-color:#2f6f4e !important;
-      color:#2f6f4e !important;
-      transform:translateY(-1px);
-    }
-    .icon-circle {
-      width:28px;
-      height:28px;
-      border-radius:8px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      color:#fff;
-      margin-right:8px;
-      font-size:14px;
-    }
-    .bg-success { background:#2f6f4e !important; }
-    .bg-info { background:#0f62fe !important; }
-    .bg-danger { background:#d23f31 !important; }
-    .chatbox {
-      width:100%;
-      max-width:680px;
-      min-height:320px;
-      margin:0 auto;
-      background:linear-gradient(#dcecff,#cfe2f8);
-      border:1px solid #bdd0e8;
-      border-radius:8px;
-      padding:18px;
-      box-shadow:inset 0 0 18px rgba(31,45,38,.08);
-    }
-    #flex2html:empty::before {
-      content:"Preview จะแสดงที่นี่";
-      min-height:282px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#60706a;
-      border:1px dashed rgba(38,50,56,.24);
-      border-radius:8px;
-      background:rgba(255,255,255,.38);
-    }
-    .workspace-footer {
-      padding:16px 22px;
-      border-top:1px solid #e4ebe1;
-      color:#6f7d77;
-      text-align:center;
-      background:#fbfdfb;
-      font-size:.9rem;
-    }
-    @media (max-width:576px) {
-      .app-shell {
-        padding:14px 10px 24px;
-      }
-      .workspace-header,
-      .workspace-body,
-      .workspace-footer {
-        padding-left:16px;
-        padding-right:16px;
-      }
-      .action-btn {
-        width:100%;
-      }
-      .chatbox {
-        min-height:260px;
-      }
-      #flex2html:empty::before {
-        min-height:220px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-<div class="app-shell" id="app" v-cloak>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light app-navbar mb-4">
-    <a class="navbar-brand brand-wrap" href="#">
-      <img src="IDRIS LOGO.png" class="brand-mark" alt="IDRIS Logo">
-      <span>
-        <span class="brand-title">CCIB APPS</span>
-        <span class="brand-subtitle">LINE Flex Image Preview</span>
-      </span>
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-333">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent-333">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item"><a class="nav-link" href="https://www.ccib-apps.com/login.php" target="_blank"><i class="fa-duotone fa-user-secret"></i> IP Tracking</a></li>
-        <li class="nav-item"><a class="nav-link" href="https://www.img2you.com" target="_blank"><i class="fa-duotone fa-upload"></i> Upload Image</a></li>
-      </ul>
-      <ul class="navbar-nav ml-auto nav-flex-icons">
-        <li class="nav-item dropdown avatar">
-          <a class="nav-link dropdown-toggle p-0" id="navbarDropdownMenuLink-333" data-toggle="dropdown">
-            <div class="user-menu">
-              <span class="user-name">Noppadol</span>
-              <img src="login.png" id="pictureUrl" class="rounded-circle z-depth-0" style="display:none;" alt="profile">
-            </div>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="#">Profile</a>
-            <a class="dropdown-item" href="logout.php">Logout</a>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <section class="workspace-card">
-  <div class="workspace-header">
-    <div>
-      <h1 class="workspace-title">สร้าง LINE Flex จากรูปภาพ</h1>
-      <p class="workspace-copy">ใส่ลิงก์รูปภาพ เลือกอัตราส่วน แล้วดูตัวอย่างก่อนแชร์</p>
-    </div>
-    <div class="line-actions">
-      <a href="#" id="line-login-btn" onclick="logIn()">
-        <img src="img/btn_login_base.png" alt="LINE Login" height="30">
-      </a>
-      <a href="#" id="line-logout-btn" onclick="logOut()" style="display:none;">
-        <img src="img/btn_logout_base.png" alt="LINE Logout" height="30">
-      </a>
-    </div>
-  </div>
-
-  <div class="workspace-body">
-  <!-- Inputs -->
-  <div class="form-group row">
-    <div class="col-md-6 mb-2">
-      <label>ลิงก์รูปภาพ</label>
-      <input type="text" v-model="h.imgUrl" @keyup.enter="btnFlex2html" class="form-control" id="link" placeholder="ใส่ลิงค์รูปภาพ https://www.img2you.com/uploads/...">
-    </div>
-    <div class="col-md-3 mb-2">
-      <label>Target Link</label>
-      <input type="text" v-model="h.linkUrl" @keyup.enter="btnFlex2html" class="form-control" id="target-link" placeholder="https://www.matichorn.com/...">
-    </div>
-    <div class="col-md-3 mb-2">
-      <label>Aspect Ratio เช่น 30:25</label>
-      <input type="text" v-model="h.ratio" @keyup.enter="btnFlex2html" class="form-control" id="ratio" placeholder="ใส่อัตราส่วนรูปภาพ 30:25">
-    </div>
-  </div>
-
-  <!-- Action Buttons -->
-  <div class="action-bar" role="group" aria-label="Flex Action Bar">
-    <button @click="btnFlex2html" class="btn btn-light action-btn">
-      <span class="icon-circle bg-success"><i class="fa-duotone fa-eye"></i></span>
-      Preview
-    </button>
-    <button onclick="sendShare()" class="btn btn-light action-btn">
-      <span class="icon-circle bg-info"><i class="fa-duotone fa-share-from-square"></i></span>
-      Share
-    </button>
-    <button @click="eraseText" class="btn btn-light action-btn">
-      <span class="icon-circle bg-danger"><i class="fa-duotone fa-broom-wide"></i></span>
-      Clear
-    </button>
-  </div>
-
-  <!-- Preview Area -->
-  <div class="chatbox" id="chatbox">
-    <div id="flex2html" ref="flex2html"></div>
-  </div>
-
-  <!-- hidden textarea สำหรับแชร์ -->
-  <textarea id="FlexCode" style="display:none;">{{ h.flex }}</textarea>
-</div>
-
- <div class="workspace-footer">
-    Copyright © High-Tech Crime Division 2021 | Developed by CCIB
-  </div>
- </section>
-</div>
-
-<!-- ✅ Libraries -->
-<script src="js/jquery-3.4.1.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/mdb.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/json5@2/dist/index.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lodash@4/lodash.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
-<!-- ✅ flex2html (แก้รูปไม่ขึ้น + รองรับ aspectRatio) -->
-<script>
-(function(g){
-  function $(id){return typeof id=="string"?document.getElementById(id):id;}
-  function make(tag,attr){const e=document.createElement(tag);for(let k in attr)e[k]=attr[k];return e;}
-
-  // 🧮 แปลง aspectRatio เช่น 30:25 => 25/30
-  function parseRatio(ratioStr){
-    if(!ratioStr) return 1;
-    const p = ratioStr.split(":");
-    if(p.length !== 2) return 1;
-    const w = parseFloat(p[0]), h = parseFloat(p[1]);
-    return h === 0 ? 1 : (h / w);
-  }
-
-  function renderHero(hero){
-  if(!hero || !hero.url) return null;
-
-  // ✅ ปรับ aspectRatio เช่น "30:25" → "30/25"
-  const ratioStr = hero.aspectRatio ? hero.aspectRatio.replace(":", "/") : "1/1";
-
-  // ✅ wrapper หลัก
-  const outer = document.createElement("div");
-  outer.style.cssText = "display:flex;justify-content:flex-end;margin:14px 0;";
-
-  const bubble = document.createElement("div");
-  bubble.style.cssText = `
-    background:#fff;
-    border-radius:8px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.15);
-    overflow:hidden;
-    max-width:320px;
-  `;
-
-  // ✅ กล่องรูป ใช้ aspect-ratio property โดยตรง (ไม่มี padding-bottom แล้ว)
-  const wrapper = document.createElement("div");
-  wrapper.style.cssText = `
-    width:100%;
-    aspect-ratio:${ratioStr};
-    position:relative;
-    overflow:hidden;
-    border-radius:8px;
-  `;
-
-  const img = document.createElement("img");
-  img.src = hero.url.startsWith("http://") ? hero.url.replace("http://","https://") : hero.url;
-  img.alt = "preview";
-  img.style.cssText = `
-    width:100%;
-    height:100%;
-    object-fit:${hero.aspectMode==="cover"?"cover":"contain"};
-    display:block;
-  `;
-
-  // ✅ จัดการกรณีโหลดไม่สำเร็จ
-  img.onerror = function(){
-    wrapper.innerHTML = "<div style='color:#d00;text-align:center;padding:10px;'>⚠️ โหลดภาพไม่สำเร็จ</div>";
-  };
-
-  wrapper.appendChild(img);
-  bubble.appendChild(wrapper);
-  outer.appendChild(bubble);
-  return outer;
-}
-
-  g.flex2html=function(id,json){
-    const el=$(id);
-    el.innerHTML="";
-
-    // ✅ ป้องกัน error ถ้า json ไม่มี contents
-    // ✅ ป้องกัน error ถ้า json ไม่มี contents
-const hero = (json && json.contents && json.contents.hero) ? json.contents.hero : null;
-if(!hero || !hero.url){
-  Swal.fire({
-    icon: 'warning',
-    title: 'ไม่พบลิงก์รูปภาพ',
-    text: 'กรุณาใส่ลิงก์รูปภาพก่อนแสดงตัวอย่าง',
-    confirmButtonText: 'ตกลง',
-    confirmButtonColor: '#007bff'
-  });
-  return;
-}
-
-
-    console.log("✅ Render image:", hero.url, "ratio:", hero.aspectRatio);
-    const preview = renderHero(hero);
-    if(!preview){
-      el.innerHTML="<div style='text-align:center;color:#888;padding:20px;'>⚠️ ไม่สามารถแสดงภาพได้</div>";
-      return;
-    }
-
-    const chatWrap = make("div",{
-      style:"background:linear-gradient(#dcecff,#cfe2f8);padding:18px;border-radius:8px;display:flex;flex-direction:column;align-items:flex-end;"
-    });
-    chatWrap.appendChild(preview);
-    el.appendChild(chatWrap);
-  };
-})(window);
-</script>
-
-
-<!-- ✅ Vue -->
-<script>
-window.vm = new Vue({
-  el: "#app",
-  data: {
-    h: {
-      imgUrl: "",
-      linkUrl: "",
-      ratio: "30:25",
-      flex: ""
-    }
-  },
-  methods: {
-    validateRatio() {
-      const ratio = String(this.h.ratio || "").trim();
-      const match = ratio.match(/^([0-9]+(?:\.[0-9]+)?):([0-9]+(?:\.[0-9]+)?)$/);
-
-      if (!match || parseFloat(match[1]) <= 0 || parseFloat(match[2]) <= 0) {
-        Swal.fire({
-          icon: "warning",
-          title: "รูปแบบ Aspect Ratio ไม่ถูกต้อง",
-          text: "กรุณากรอกเป็น กว้าง:สูง เช่น 30:25 หรือ 16:9",
-          confirmButtonText: "ตกลง",
-          confirmButtonColor: "#2f6f4e"
-        });
-        return false;
-      }
-
-      this.h.ratio = ratio;
-      return true;
-    },
-
-    async btnFlex2html() {
-      if (!this.validateRatio()) {
-        return;
-      }
-
-      const imageUrl = String(this.h.imgUrl || "").trim();
-      const targetUrl = String(this.h.linkUrl || "").trim() || imageUrl;
-
-      if (!imageUrl) {
-        Swal.fire({
-          icon: "warning",
-          title: "Please enter an image URL",
-          confirmButtonText: "OK",
-          confirmButtonColor: "#2f6f4e"
-        });
-        return;
-      }
-
-      const json = {
-        type: "flex",
-        altText: "sent a photo",
-        contents: {
-          type: "bubble",
-          hero: {
-            type: "image",
-            url: imageUrl,
-            size: "full",
-            aspectRatio: this.h.ratio,
-            aspectMode: "cover",
-            action: { type: "uri", uri: targetUrl }
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ | IDRIS Style Flex Dashboard</title>
+    <!-- ใช้ Bootstrap 5 และ Font Awesome สำหรับไอคอน -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <!-- ดึง LINE LIFF SDK -->
+    <script src="https://line-scdn.net"></script>
+    
+    <style>
+        body {
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+            font-family: 'ChulaCharasNew', 'Helvetica Neue', Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
         }
-      };
-      this.h.flex = JSON.stringify(json, null, 2);
-      document.getElementById("FlexCode").value = this.h.flex;
-      window.flex2html("flex2html", json);
-    },
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 15px;
+        }
+        .card {
+            background: #1b263b;
+            border: 1px solid #415a77;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .ccib-logo {
+            font-size: 50px;
+            color: #00b4d8;
+            text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+        }
+        .form-control {
+            background-color: #0d1b2a;
+            border: 1px solid #415a77;
+            color: #fff;
+        }
+        .form-control:focus {
+            background-color: #0d1b2a;
+            border-color: #00b4d8;
+            color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(0, 180, 216, 0.25);
+        }
+        .btn-ccib {
+            background-color: #0077b6;
+            color: white;
+            border: none;
+        }
+        .btn-ccib:hover {
+            background-color: #0096c7;
+            color: white;
+        }
+        .dashboard-container {
+            max-width: 800px;
+            width: 100%;
+            display: none; /* ซ่อนแดชบอร์ดไว้ก่อนล็อกอิน */
+        }
+        footer {
+            font-size: 12px;
+            color: #778da9;
+        }
+    </style>
+</head>
+<body>
 
-    // ✅ ฟังก์ชัน Clear ใหม่
-    eraseText() {
-      this.h.imgUrl = "";
-      this.h.linkUrl = "";
-      this.h.ratio = "";
-      this.h.flex = "";
-      document.getElementById("FlexCode").value = "";
+<!-- ================= หน้าจอเข้าสู่ระบบ (IDRIS LOGIN VIEW) ================= -->
+<div id="loginSection" class="login-container">
+    <div class="card p-4 text-center">
+        <div class="mb-3">
+            <img src="IDRIS LOGO.png" alt="IDRIS" style="width: 100px; height: auto; object-fit: contain;">
+        </div>
+        <h5 class="fw-bold mb-1 text-white">เข้าสู่ระบบ IDRIS APPS</h5>
+        <p class="text-muted small mb-4">จัดการระบบด้วยบัญชีที่ได้รับสิทธิ์</p>
+        
+        <div class="text-start">
+            <div class="mb-3">
+                <label class="form-label small text-uppercase tracking-wider">อีเมล</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-envelope"></i></span>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="name@domain.com">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label small text-uppercase tracking-wider">รหัสผ่าน</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fa-solid fa-lock"></i></span>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••••">
+                </div>
+            </div>
+            <button class="btn btn-ccib w-100 py-2 fw-bold mb-3" onclick="checkLogin()"><i class="fa-solid fa-right-to-bracket me-2"></i>เข้าสู่ระบบ</button>
+        </div>
+        
+        <footer class="mt-2">
+            © Intelligent Digital Response & Investigation System | IDRIS
+        </footer>
+    </div>
+</div>
 
-      // ✅ ล้างภาพ preview
-      const container = document.getElementById("flex2html");
-      container.innerHTML = "";
+<!-- ================= หน้าจอจัดการระบบ (FLEX DASHBOARD VIEW) ================= -->
+<div id="dashboardSection" class="container dashboard-container py-4">
+    <div class="card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-shield-halved text-info fs-3 me-2"></i>
+                <h4 class="m-0 text-white fw-bold">Flex Message Dashboard</h4>
+            </div>
+            <button class="btn btn-outline-danger btn-sm" onclick="logout()"><i class="fa-solid fa-power-off me-1"></i> ออกจากระบบ</button>
+        </div>
 
-      // ✅ Toast แจ้งผล
-      Swal.fire({
-        icon: "success",
-        title: "ล้างข้อมูลเรียบร้อย",
-        timer: 1200,
-        showConfirmButton: false
-      });
-    }
-  }
-});
-</script>
+        <!-- แท็บสเตตัส LINE LIFF -->
+        <div class="p-3 mb-4 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fa-brands fa-line text-success fs-4 me-2 align-middle"></i>
+                <span class="small text-muted">LINE Login Status:</span>
+                <span id="liffStatus" class="fw-bold ms-1 text-warning">กำลังตรวจสอบระบบ LINE...</span>
+            </div>
+            <button id="btnLineLogin" class="btn btn-success btn-sm" onclick="lineLogin()" style="display:none;">เชื่อมต่อแอป LINE</button>
+        </div>
 
+        <!-- ฟอร์ม JSON -->
+        <div class="mb-3">
+            <label class="form-label fw-bold text-info"><i class="fa-solid fa-code me-1"></i> วางโค้ด Flex Message (JSON)</label>
+            <textarea id="flexJson" class="form-control family-monospace" rows="10" style="background:#0d1b2a; color:#00f5d4;" placeholder='{"type": "bubble", "body": { "type": "box", "layout": "vertical", "contents": [{"type": "text", "text": "Hello CCIB"}]}}'></textarea>
+        </div>
 
-<!-- ✅ LINE LIFF & Share -->
+        <div class="d-grid">
+            <button id="btnSend" class="btn btn-primary btn-lg fw-bold" onclick="sendFlexMessage()" disabled>
+                <i class="fa-solid fa-paper-plane me-2"></i>ส่ง Flex Message เข้า LINE
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-function updateLineButtons(isLoggedIn){
-  const loginBtn = document.getElementById("line-login-btn");
-  const logoutBtn = document.getElementById("line-logout-btn");
-  if(loginBtn){
-    loginBtn.style.display = isLoggedIn ? "none" : "inline-flex";
-  }
-  if(logoutBtn){
-    logoutBtn.style.display = isLoggedIn ? "inline-flex" : "none";
-  }
-}
-async function mainLiff(){
-  try{
-    await liff.init({liffId:"1657384180-2M9OrWNl"});
-    const loggedIn = liff.isLoggedIn();
-    updateLineButtons(loggedIn);
-    if(loggedIn){
-      const p=await liff.getProfile();
-      $("#pictureUrl").attr("src",p.pictureUrl).show();
+// 🔒 ตั้งค่าบัญชีล็อกอินหน้าเว็บ (แก้ไขตรงนี้ได้ตามต้องการ)
+const AUTH_EMAIL = "shunggase@gmail.com";
+const AUTH_PASSWORD = "IDRIS1219";
+
+// ⚠️ ใส่ LIFF ID ที่ได้จาก LINE Developers ตรงนี้
+const myLiffId = '2010383431-NwcATXJE'; 
+
+// ฟังก์ชันตรวจสอบการล็อกอินเข้าหน้าเว็บ
+function checkLogin() {
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPassword').value;
+
+    if(email === AUTH_EMAIL && pass === AUTH_PASSWORD) {
+        // ถ้ารหัสถูกต้อง สลับไปหน้าแดชบอร์ด
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('dashboardSection').style.display = 'block';
+        // เคลียร์ตำแหน่งการจัดวาง body ใหม่
+        document.body.style.display = 'block';
+        document.body.style.height = 'auto';
+        
+        // เริ่มรันระบบ LINE LIFF หลังล็อกอินผ่าน
+        initLiff();
+    } else {
+        alert("ขออภัย บัญชีของคุณไม่ได้รับสิทธิ์เข้าใช้งานระบบ");
     }
-  }catch(e){console.error(e);}
 }
-function logIn(){
-  if(liff.isLoggedIn()){
-    Swal.fire({icon:"info",title:"เข้าสู่ระบบแล้ว",timer:1500,showConfirmButton:false});
-  }else{liff.login();}
+
+// ฟังก์ชันออกจากระบบหน้าเว็บ
+function logout() {
+    if(liff.isLoggedIn()) { liff.logout(); }
+    window.location.reload();
 }
-function logOut(){
-  Swal.fire({title:"ออกจากระบบ LINE?",icon:"warning",showCancelButton:true,confirmButtonText:"ใช่"}).then(r=>{
-    if(r.isConfirmed){liff.logout();updateLineButtons(false);location.reload();}
-  });
+
+// เริ่มต้นระบบ LINE LIFF 
+async function initLiff() {
+    try {
+        await liff.init({ liffId: myLiffId });
+        if (liff.isLoggedIn()) {
+            document.getElementById('btnLineLogin').style.display = 'none';
+            document.getElementById('btnSend').disabled = false;
+            document.getElementById('liffStatus').innerText = 'เชื่อมต่อกับ LINE สำเร็จ';
+            document.getElementById('liffStatus').className = 'fw-bold ms-1 text-success';
+        } else {
+            document.getElementById('btnLineLogin').style.display = 'inline-block';
+            document.getElementById('liffStatus').innerText = 'กรุณาเชื่อมต่อบัญชี LINE';
+            document.getElementById('liffStatus').className = 'fw-bold ms-1 text-danger';
+        }
+    } catch (error) {
+        console.error('LIFF Initialization failed', error);
+    }
 }
-async function sendShare(){
-  try{
-    if(!liff.isLoggedIn()){Swal.fire({icon:"warning",title:"ยังไม่ได้เข้าสู่ระบบ",timer:1500});return;}
-    const raw=document.getElementById("FlexCode").value.trim();
-    if(!raw){Swal.fire({icon:"warning",title:"กรุณาสร้าง Preview ก่อนแชร์",timer:1600});return;}
-    const json=JSON5.parse(raw);
-    Swal.fire({title:"กำลังเปิด Share Target Picker...",allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
-    const res=await liff.shareTargetPicker([json]);
-    Swal.close();
-    if(res) Swal.fire({icon:"success",title:"แชร์สำเร็จ!",timer:1200,showConfirmButton:false});
-    else Swal.fire({icon:"info",title:"ยกเลิกการแชร์",timer:900,showConfirmButton:false});
-  }catch(e){Swal.fire({icon:"error",title:"เกิดข้อผิดพลาด",text:e.message});}
+
+function lineLogin() { liff.login(); }
+
+async function sendFlexMessage() {
+    const jsonStr = document.getElementById('flexJson').value;
+    if (!jsonStr.trim()) {
+        alert('กรุณาใส่โค้ด JSON ก่อนครับ');
+        return;
+    }
+
+    try {
+        const flexContent = JSON.parse(jsonStr);
+        await liff.sendMessages([{
+            type: "flex",
+            altText: "คุณได้รับข่าวสารใหม่จากระบบ",
+            contents: flexContent
+        }]);
+        alert('ส่ง Flex Message สำเร็จแล้ว!');
+    } catch (error) {
+        alert('เกิดข้อผิดพลาด: ' + error.message + '\nกรุณาตรวจเช็คไวยากรณ์ JSON');
+    }
 }
-document.addEventListener("DOMContentLoaded",mainLiff);
 </script>
+
 </body>
 </html>
