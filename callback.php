@@ -57,8 +57,8 @@ if (isset($token_array['id_token']) || isset($token_array['access_token'])) {
     
     // บันทึกข้อมูลลงเซสชัน
     $_SESSION['profile'] = $profile_array;
+    setcookie('line_profile_data', json_encode($profile_array), time() + 86400, "/");
     
-    // 💡 ย้ายผู้ใช้ไปยังหน้าปลายทางสำเร็จ (ระวังเรื่องตัวพิมพ์เล็ก-ใหญ่ของชื่อไฟล์ด้วยนะครับ)
     header('location: IDRISwellcome.php');
     exit(); 
 } else {
