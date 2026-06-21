@@ -9,6 +9,7 @@
     define('DB_PORT', getenv('DB_PORT') ?: '16494'); // เพิ่มตัวแปร Port เพื่อรองรับ Aiven
 
     class DB_con {
+        public $conn;
         function __construct() {
             // ปรับคำสั่ง mysqli_connect ให้รองรับการระบุพอร์ตสำหรับการต่อเชื่อมเข้า Cloud 
             $conn = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_PORT);

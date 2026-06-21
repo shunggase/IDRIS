@@ -1,4 +1,7 @@
 <?php
+
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
+
 include('functions.php');
 
 $userdata = new DB_con();
