@@ -4,31 +4,43 @@ include_once('functions.php');
 
 $userdata = new DB_con();
 
-if (isset($_POST['login'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'])) {
     $uname = $_POST['username'];
     $password = md5($_POST['password']);
 
     $result = $userdata->signin($uname, $password);
-    if ($result && mysqli_num_rows($result) > 0) {
-        $num = mysqli_fetch_array($result);
-        $_SESSION['id'] = $num['id'];
-        $_SESSION['fullname'] = $num['fullname'];
+    
+    // ตรวจสอบและดึงข้อมูลออกมาในรูปแบบสากลเพื่อไม่ให้เซสชันหลุดหายบน Vercel
+    if ($result) {
+        $num = mysqli_fetch_assoc($result); // เปลี่ยนมาใช้ mysqli_fetch_assoc เพื่อความแม่นยำในการระบุชื่อฟิลด์
         
-        // บังคับเปลี่ยนหน้าด้วยคำสั่งล้างแคชระบบ
-        echo "<script>
-            alert('Login Success!');
-            window.location.replace('welcome.php');
-        </script>";
-        exit();
+        if ($num) {
+            $_SESSION['id'] = $num['id'];
+            $_SESSION['fullname'] = $num['fullname'];
+            
+            // ใช้ JavaScript บังคับล้างแคชบราวเซอร์เพื่อทะลุเข้าหน้า welcome.php
+            echo "<script>
+                alert('Login Success!');
+                window.location.href = 'welcome.php?v=" . time() . "';
+            </script>";
+            exit();
+        } else {
+            echo "<script>
+                alert('รหัสผ่านไม่ถูกต้อง หรือไม่พบชื่อผู้ใช้นี้ในระบบ!');
+                window.location.href = 'signin.php';
+            </script>";
+            exit();
+        }
     } else {
         echo "<script>
-            alert('Something went wrong! Please try again.');
-            window.location.replace('signin.php');
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อคลาวด์ฐานข้อมูล!');
+            window.location.href = 'signin.php';
         </script>";
         exit();
     }
 }
 ?>
+
 
 
 <!doctype html>
