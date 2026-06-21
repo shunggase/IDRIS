@@ -1,20 +1,20 @@
 <?php
-// บังคับตั้งค่า Cookie Session ให้รองรับการส่งค่าข้ามไฟล์บน Vercel ก่อนเริ่มระบบ
+// ตั้งค่าระบบเซสชันให้รองรับ Serverless และ Cookie บน Vercel
 ini_set('session.cookie_samesite', 'Lax');
+ini_set('session.cookie_secure', '1'); // บังคับใช้งานผ่าน https:// ของ Vercel
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// เช็กระบบความปลอดภัย: หากเป็นค่าว่างจริงให้ส่งกลับหน้า login
-if (!isset($_SESSION['id']) || $_SESSION['id'] === null || $_SESSION['id'] === "") {
-    // ส่งกลับหน้าล็อกอินแบบระบุรหัสป้องกันแคช
+// เช็กระบบความปลอดภัย: หากยังไม่ได้ล็อกอินให้ส่งกลับหน้า login
+if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     header("Location: signin.php?auth=failed&v=" . time());
     exit();
-} else {
-    // 💡 หากมีค่า ให้ปล่อยระบบทำงานต่อเพื่อเปิดรหัส HTML ด้านล่าง
 }
-?>
 
+// ดึงค่ามาพักไว้ในตัวแปรเพื่อไม่ให้ระบบเตือนเวลาเปลี่ยนหน้าชั่วคราว
+$session_fullname = isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'User';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -28,24 +28,22 @@ if (!isset($_SESSION['id']) || $_SESSION['id'] === null || $_SESSION['id'] === "
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <!-- เพิ่ม me-2 เพื่อเว้นระยะห่างด้านขวาของโลโก้ -->
     <img src="IDRISLOGO.png" class="brand-mark me-2" alt="IDRIS Logo" style="height: 40px; width: auto;">
     <a class="navbar-brand" href="#"><strong>IDRIS</strong></a>
-        <div class="text-white d-flex flex-column">          
-          <span class="brand-subtitle text-white-50 small">LINE Flex Image Preview</span>
-          <span class="brand-title fw-bold">Intelligent Digital Response & Investigation System</span>
-        </div>
+    <div class="text-white d-flex flex-column">          
+      <span class="brand-subtitle text-white-50 small">LINE Flex Image Preview</span>
+      <span class="brand-title fw-bold">Intelligent Digital Response & Investigation System</span>
+    </div>
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     
-    <!-- เพิ่ม ms-auto เพื่อดันเมนูทั้งหมดในกล่องนี้ไปทางขวาสุด -->
     <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
           <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <?php echo htmlspecialchars($_SESSION['fullname'], ENT_QUOTES, 'UTF-8'); ?>
+            <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?>
           </button>
           <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
             <li><a class="dropdown-item" href="logout.php">Logout</a></li>
@@ -61,7 +59,7 @@ if (!isset($_SESSION['id']) || $_SESSION['id'] === null || $_SESSION['id'] === "
 <body>
 
     <div class="container">
-        <h1 class="mt-5">Welcome <?php echo htmlspecialchars($_SESSION['fullname'], ENT_QUOTES, 'UTF-8'); ?> To IDRIS</h1>
+        <h1 class="mt-5">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</h1>
         <hr>
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -70,23 +68,16 @@ if (!isset($_SESSION['id']) || $_SESSION['id'] === null || $_SESSION['id'] === "
         <a href="logout.php" class="btn btn-danger">LineLogout</a>
     </div>
 
-        <?php require_once('nav.php'); ?>
+    <?php require_once('nav.php'); ?>
 
-        </main class="container">
-            <div class="bg-light p-5 rounded">
-                <h1 class="mt-5">Welcome <?php echo htmlspecialchars($_SESSION['fullname'], ENT_QUOTES, 'UTF-8'); ?> To IDRIS</h1>
-                <p class="lead">Let's login to the IDRIS by using line login</p>
-            </div>
-        </main>
+    <main class="container">
+        <div class="bg-light p-5 rounded mt-3">
+            <h1 class="mt-2">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</h1>
+            <p class="lead">Let's login to the IDRIS by using line login</p>
+        </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 </body>
 </html>
-
-
-
-<?php
-
-    }
-    ?>
