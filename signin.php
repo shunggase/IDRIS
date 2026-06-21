@@ -10,17 +10,24 @@ if (isset($_POST['login'])) {
 
     $result = $userdata->signin($uname, $password);
     if ($result && mysqli_num_rows($result) > 0) {
-        $num = mysqli_fetch_array($result); // นำข้อมูลมาเก็บเข้าเซสชันด้านล่างตามปกติ
+        $num = mysqli_fetch_array($result);
         $_SESSION['id'] = $num['id'];
         $_SESSION['fullname'] = $num['fullname'];
-        echo "<script>alert('Login Success!');</script>";
-        echo "<script>window.location.href='welcome.php'</script>";
+        
+        // บังคับเปลี่ยนหน้าด้วยคำสั่งล้างแคชระบบ
+        echo "<script>
+            alert('Login Success!');
+            window.location.replace('welcome.php');
+        </script>";
+        exit();
     } else {
-        echo "<script>alert('Something went wrong! Please try again.');</script>";
-        echo "<script>window.location.href='signin.php'</script>";
+        echo "<script>
+            alert('Something went wrong! Please try again.');
+            window.location.replace('signin.php');
+        </script>";
+        exit();
     }
 }
-
 ?>
 
 
@@ -39,7 +46,7 @@ if (isset($_POST['login'])) {
         <img class="mb-4" src="https://img2.pic.in.th/de114711-2369-4e5e-8b8c-10c6ab4dfb77.png" alt="" height="250">
         <h1 class="h3 mb-3 fw-normal"><b>IDRIS</b> - Login</h1>
         <hr>
-        <form method="post">
+        <form method="post" action="index.php">
             <div class="mb-3">
                 <label for="username" class="form-label">User Name</label>
                 <input type="text" class="form-control" id="username" name="username">
