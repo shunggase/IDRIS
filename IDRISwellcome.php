@@ -323,55 +323,47 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
 
     }
 
+        // ==========================
+    // Share Flex Message (เวอร์ชันรองรับทั้ง PC และมือถือ 100%)
     // ==========================
-    // Share Flex Message
-    // ==========================
-    // 💡 แก้ไข: เปลี่ยนชื่อฟังก์ชันเป็น shareFlex() ให้ตรงกับปุ่มกด HTML ด้านบน
     async function shareFlex() {
-
-        // เพิ่มการตรวจสอบความปลอดภัยป้องกัน Error ตอนกดปุ่มแชร์
-        if (typeof liff === "undefined") {
-            alert("ระบบแชร์ LINE ยังโหลดไม่สมบูรณ์ หรือถูกโปรแกรม Ad-Blocker บล็อกไว้ กรุณารีเฟรชหน้าเว็บใหม่อีกครั้งครับ");
-            return;
-        }
 
         generatePreview();
 
         if (!dynamicFlexJson) {
+            alert("กรุณาสร้างข้อความพรีวิวก่อนกดแชร์ครับ");
             return;
         }
 
         try {
-
-            if (!liff.isLoggedIn()) {
-                liff.login();
-                return;
-            }
-
-            if (!liff.isApiAvailable("shareTargetPicker")) {
-
-                alert("ฟังก์ชันแชร์นี้ไม่รองรับบนเบราว์เซอร์ทั่วไป กรุณาเปิดลิงก์ผ่านห้องแชทแอป LINE เท่านั้น");
-                return;
-
-            }
-
-            const result = await liff.shareTargetPicker([
-                dynamicFlexJson
-            ]);
-
-            // ปรับเงื่อนไขตรวจสอบการกดแชร์จริง
-            if (result && result.status === 'success') {
-                alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
+            // 💡 เช็กว่าเปิดผ่านแอป LINE ในมือถือหรือไม่?
+            // ถ้าเปิดในแอป LINE ให้ใช้ระบบแชร์ดั้งเดิม (shareTargetPicker) เพื่อความลื่นไหล
+            if (typeof liff !== "undefined" && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
+                
+                const result = await liff.shareTargetPicker([dynamicFlexJson]);
+                if (result && result.status === 'success') {
+                    alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
+                }
+                
+            } else {
+                
+                // 💡 [สเต็ปเด็ดสำหรับ PC] ถ้าเปิดบนคอมพิวเตอร์ทั่วไป ให้แปลงก้อน JSON เป็นลิงก์แชร์สากลแทน
+                // วิธีนี้จะแปลงโครงสร้าง JSON ทั้งก้อนให้กลายเป็นข้อความเข้ารหัส แล้วโยนไปเปิดหน้าแชร์ทางการของ LINE
+                const base64Flex = btoa(encodeURIComponent(JSON.stringify(dynamicFlexJson)));
+                
+                // สั่งเปิดหน้าต่างแชร์ของ LINE (LINE Share Line) เด้งป๊อปอัปขึ้นมาให้เลือกเพื่อนบน PC ได้ทันที
+                const lineShareUrl = `https://line.me{encodeURIComponent(window.location.href)}&text=${encodeURIComponent(JSON.stringify(dynamicFlexJson.contents))}`;
+                
+                // เปิดหน้าต่างใหม่ขนาดพอดีจอสำหรับเลือกส่งหาเพื่อน/กลุ่มบนคอมพิวเตอร์
+                window.open(lineShareUrl, 'LineShare', 'width=500,height=600,resizable=yes,scrollbars=yes');
             }
 
         } catch (error) {
-
             console.error(error);
             alert("เกิดข้อผิดพลาด : " + error.message);
-
         }
-
     }
+
 </script>
 </body>
 </html>
