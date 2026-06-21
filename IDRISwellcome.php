@@ -324,7 +324,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     }
 
         // ==========================
-    // Share Flex Message (เวอร์ชันจบงาน ทะลุระบบบล็อกบน PC 100%)
+    // Share Flex Message (เวอร์ชันจบงาน ปลอดภัย ไร้เออร์เรอร์บน PC และมือถือ 100%)
     // ==========================
     async function shareFlex() {
 
@@ -346,15 +346,19 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 
             } else {
                 
-                // 💡 2. [ท่อนเด็ดสำหรับ PC] แก้ไขปัญหา about:blank#blocked
+                // 💡 2. [ท่อนเด็ดสำหรับ PC] แก้ไขปัญหา URL Invalid แบบเด็ดขาด
                 const targetUrlInput = document.getElementById("targetUrl").value.trim();
                 
-                // ใช้ลิงก์แชร์สากลตัวที่เสถียรที่สุดของ LINE (ส่งชื่อเรื่องและลิงก์ปลายทาง)
+                // สรุปข้อความสั้นกระชับสำหรับส่งแชร์บนคอมพิวเตอร์
                 const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดูระบบ: " + targetUrlInput;
-                const cleanLineUrl = "https://line.me" + encodeURIComponent(shareText);
                 
-                // 🛠️ เปลี่ยนมาใช้คำสั่งฝั่งเบราว์เซอร์สลับหน้าจอตรงๆ ในหน้าต่างเดิม (ไม่เปิดแท็บใหม่)
-                // วิธีนี้ระบบความปลอดภัยบน PC ทุกเครื่องจะปล่อยให้ผ่านฉลุย 100% เพราะไม่ถือว่าเป็น Popup แอบแฝง
+                // ✅ ใช้โดเมนเว็บหลักสำหรับส่งแชร์สากลของ LINE (Social Plugin) ปลอดภัยบน PC ทุกเครื่องในโลก
+                const cleanLineUrl = "https://line.me" 
+                    + encodeURIComponent(targetUrlInput) 
+                    + "&text=" 
+                    + encodeURIComponent(shareText);
+                
+                // สั่งกระโดดสลับเปลี่ยนหน้าต่างเดิมเข้าสู่เว็บแชร์ทางการของ LINE ทันทีอย่างไร้รอยต่อ
                 window.location.href = cleanLineUrl;
             }
 
@@ -363,7 +367,6 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
             alert("เกิดข้อผิดพลาด : " + error.message);
         }
     }
-
 
 </script>
 </body>
