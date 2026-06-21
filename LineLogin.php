@@ -4,7 +4,7 @@ class LineLogin
     #### change your id
     private const CLIENT_ID = '2010383431';
     private const CLIENT_SECRET = '1ff050c93e8ffb4e3c958449f9d70ed5';
-    private const REDIRECT_URL = 'http://localhost/register_IDRIS/callback.php';
+    private const REDIRECT_URL = 'https://idris-laet.vercel.app/callback.php';
 
     private const AUTH_URL = 'https://access.line.me/oauth2/v2.1/authorize';
     private const PROFILE_URL = 'https://api.line.me/v2/profile';
