@@ -1,12 +1,20 @@
 <?php
-
+// บังคับตั้งค่า Cookie Session ให้รองรับการส่งค่าข้ามไฟล์บน Vercel ก่อนเริ่มระบบ
+ini_set('session.cookie_samesite', 'Lax');
+if (session_status() == PHP_SESSION_NONE) {
     session_start();
-    require_once('LineLogin.php');
-    if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
-        header("Location: signin.php");
-        exit();
-    } else {
+}
+
+// เช็กระบบความปลอดภัย: หากเป็นค่าว่างจริงให้ส่งกลับหน้า login
+if (!isset($_SESSION['id']) || $_SESSION['id'] === null || $_SESSION['id'] === "") {
+    // ส่งกลับหน้าล็อกอินแบบระบุรหัสป้องกันแคช
+    header("Location: signin.php?auth=failed&v=" . time());
+    exit();
+} else {
+    // 💡 หากมีค่า ให้ปล่อยระบบทำงานต่อเพื่อเปิดรหัส HTML ด้านล่าง
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
