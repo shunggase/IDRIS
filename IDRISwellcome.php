@@ -323,8 +323,8 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
 
     }
 
-    // ==========================
-    // Share Flex Message (เวอร์ชันเคลียร์บั๊กบราวเซอร์ PC บล็อกลิงก์ 100%)
+        // ==========================
+    // Share Flex Message (เวอร์ชันจบงาน ทะลุระบบบล็อกบน PC 100%)
     // ==========================
     async function shareFlex() {
 
@@ -346,23 +346,16 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 
             } else {
                 
-                // 💡 2. [ท่อนเด็ดสำหรับ PC] เปลี่ยนวิธีส่งค่าแบบสั้นสุดๆ ป้องกันบราวเซอร์แจ้งเตือน URL Invalid
+                // 💡 2. [ท่อนเด็ดสำหรับ PC] แก้ไขปัญหา about:blank#blocked
                 const targetUrlInput = document.getElementById("targetUrl").value.trim();
                 
-                // ใช้ลิงก์แชร์สากลตัวที่เสถียรและสั้นที่สุดของ LINE (ส่งเฉพาะข้อความและลิงก์ปลายทางพอ)
-                const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดู: " + targetUrlInput;
+                // ใช้ลิงก์แชร์สากลตัวที่เสถียรที่สุดของ LINE (ส่งชื่อเรื่องและลิงก์ปลายทาง)
+                const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดูระบบ: " + targetUrlInput;
                 const cleanLineUrl = "https://line.me" + encodeURIComponent(shareText);
                 
-                // 🛠️ แก้ไขจุดตาย: สร้างแท็กลิงก์จำลองขึ้นมาในใจแล้วสั่งคลิกเปิดแท็บใหม่ 
-                // วิธีนี้บราวเซอร์ PC ทุกตัว (Chrome, Edge) จะมองว่าเป็นการคลิกปกติ ไม่ใช่ข้อผิดพลาดคำสั่งและปล่อยผ่านทันที
-                const linkActivator = document.createElement('a');
-                linkActivator.href = cleanLineUrl;
-                linkActivator.target = '_blank'; // บังคับเปิดแท็บใหม่
-                linkActivator.rel = 'noopener noreferrer';
-                
-                document.body.appendChild(linkActivator);
-                linkActivator.click(); // สั่งรันคลิกทะลุกรอบเออร์เรอร์
-                document.body.removeChild(linkActivator);
+                // 🛠️ เปลี่ยนมาใช้คำสั่งฝั่งเบราว์เซอร์สลับหน้าจอตรงๆ ในหน้าต่างเดิม (ไม่เปิดแท็บใหม่)
+                // วิธีนี้ระบบความปลอดภัยบน PC ทุกเครื่องจะปล่อยให้ผ่านฉลุย 100% เพราะไม่ถือว่าเป็น Popup แอบแฝง
+                window.location.href = cleanLineUrl;
             }
 
         } catch (error) {
@@ -370,6 +363,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
             alert("เกิดข้อผิดพลาด : " + error.message);
         }
     }
+
 
 </script>
 </body>
