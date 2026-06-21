@@ -6,7 +6,7 @@
     define('DB_USERNAME', getenv('DB_USER') ?: 'root'); 
     define('DB_PASSWORD', getenv('DB_PASSWORD') ?: ''); 
     define('DB_NAME', getenv('DB_NAME') ?: 'register_idris'); 
-    define('DB_PORT', getenv('DB_PORT') ?: '3306'); // เพิ่มตัวแปร Port เพื่อรองรับ Aiven
+    define('DB_PORT', getenv('DB_PORT') ?: '16494'); // เพิ่มตัวแปร Port เพื่อรองรับ Aiven
 
     class DB_con {
         function __construct() {
