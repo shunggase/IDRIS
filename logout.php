@@ -6,6 +6,6 @@ session_destroy(); // ล้างเซสชันเก่า
 setcookie('user_id', '', time() - 3600, '/');
 setcookie('user_fullname', '', time() - 3600, '/');
 
-header("Location: signin.php");
+header("Location: index.php?v=" . time());
 exit();
 ?>

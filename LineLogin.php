@@ -18,10 +18,11 @@ class LineLogin
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
+        $state_hash = hash('sha256', microtime(TRUE) . rand() . $_SERVER['REMOTE_ADDR']);
 
-        $_SESSION['state'] = hash('sha256', microtime(TRUE) . rand() . $_SERVER['REMOTE_ADDR']);
+        setcookie('line_state', $state_hash, time() + 900, "/", "", true, true);
 
-        $link = self::AUTH_URL . '?response_type=code&client_id=' . self::CLIENT_ID . '&redirect_uri=' . self::REDIRECT_URL . '&scope=profile%20openid%20email&state=' . $_SESSION['state'];
+        $link = self::AUTH_URL . '?response_type=code&client_id=' . self::CLIENT_ID . '&redirect_uri=' . self::REDIRECT_URL . '&scope=profile%20openid%20email&state=' . $state_hash;
         return $link;
     }
 
@@ -39,13 +40,16 @@ class LineLogin
         return json_decode($response);
     }
 
-    function token($code, $state)
+        function token($code, $state)
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        if ($_SESSION['state'] != $state) {
+        // 💡 เปลี่ยนมาดักรับค่ารหัสความปลอดภัยจากคุกกี้แทน เพื่อป้องกันเซสชันหลุดหายบน Vercel
+        $saved_state = isset($_COOKIE['line_state']) ? $_COOKIE['line_state'] : '';
+
+        if ($saved_state !== $state) {
             return false;
         }
 
@@ -61,6 +65,7 @@ class LineLogin
         $response = $this->sendCURL(self::TOKEN_URL, $header, 'POST', $data);
         return json_decode($response);
     }
+
 
     function profileFormIdToken($token = null)
     {
