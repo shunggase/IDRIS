@@ -1,12 +1,15 @@
 <?php
 ob_start();
 
+// 💡 เพิ่มคำสั่งปิดการแสดงผลข้อความแจ้งเตือนประเภท Warning และ Deprecated บนหน้าเว็บจริง
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 require_once('LineLogin.php');
 
-// 💡 ตรวจสอบและดึงค่าคุกกี้สำรองหากเซสชันหลักหลุดหายระหว่างข้ามแพลตฟอร์ม
+// ตรวจสอบและดึงค่าคุกกี้สำรองหากเซสชันหลักหลุดหายระหว่างข้ามแพลตฟอร์ม
 if (isset($_COOKIE['user_id']) && !empty($_COOKIE['user_id'])) {
     $_SESSION['id'] = $_COOKIE['user_id'];
 }
@@ -20,15 +23,16 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     exit();
 } 
 
-
     $user_id = $_SESSION['id']; 
-    $profile = $_SESSION['profile']; 
+    
+    // 💡 แก้ไขบรรทัดที่ 25: ตรวจจับสิทธิ์เผื่อกรณีไม่ได้ล็อกอินผ่านไลน์เข้ามา เพื่อป้องกัน Error
+    $profile = isset($_SESSION['profile']) ? $_SESSION['profile'] : null; 
 
     $db_host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: "localhost";
     $db_user = $_ENV['DB_USER'] ?? getenv('DB_USER') ?: "root";           
     $db_pass = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?: "";               
     $db_name = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: "register_idris"; 
-    $db_port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: "16494"; // พอร์ตเสริมสำหรับ Aiven
+    $db_port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: "16494"; 
 
     $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
     $conn->set_charset("utf8mb4");
@@ -47,8 +51,8 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
 
     $stmt->close();
     $conn->close();
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
