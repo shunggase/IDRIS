@@ -323,8 +323,8 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
 
     }
 
-        // ==========================
-    // Share Flex Message (เวอร์ชันรองรับทั้ง PC และมือถือ 100%)
+     // ==========================
+    // Share Flex Message (เวอร์ชันรองรับ PC และมือถือ 100% ตัวจริง)
     // ==========================
     async function shareFlex() {
 
@@ -336,8 +336,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
         }
 
         try {
-            // 💡 เช็กว่าเปิดผ่านแอป LINE ในมือถือหรือไม่?
-            // ถ้าเปิดในแอป LINE ให้ใช้ระบบแชร์ดั้งเดิม (shareTargetPicker) เพื่อความลื่นไหล
+            // 💡 1. ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์ดั้งเดิม (shareTargetPicker)
             if (typeof liff !== "undefined" && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
                 
                 const result = await liff.shareTargetPicker([dynamicFlexJson]);
@@ -347,14 +346,16 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 
             } else {
                 
-                // 💡 [สเต็ปเด็ดสำหรับ PC] ถ้าเปิดบนคอมพิวเตอร์ทั่วไป ให้แปลงก้อน JSON เป็นลิงก์แชร์สากลแทน
-                // วิธีนี้จะแปลงโครงสร้าง JSON ทั้งก้อนให้กลายเป็นข้อความเข้ารหัส แล้วโยนไปเปิดหน้าแชร์ทางการของ LINE
-                const base64Flex = btoa(encodeURIComponent(JSON.stringify(dynamicFlexJson)));
+                // 💡 2. [ท่อนแก้ไขสำหรับ PC] ดึงเอาเฉพาะก้อน "contents" (โครงสร้าง Bubble ของ Flex) ออกมาแปลงค่า
+                const flexContents = dynamicFlexJson.contents;
                 
-                // สั่งเปิดหน้าต่างแชร์ของ LINE (LINE Share Line) เด้งป๊อปอัปขึ้นมาให้เลือกเพื่อนบน PC ได้ทันที
-                const lineShareUrl = `https://line.me{encodeURIComponent(window.location.href)}&text=${encodeURIComponent(JSON.stringify(dynamicFlexJson.contents))}`;
+                // ✅ ซ่อมแซมลิงก์แชร์ตามหลักสากลของ LINE (ใส่ตัวอักษรและโครงสร้าง URL ให้ครบถ้วน)
+                const lineShareUrl = "https://line.me" 
+                    + encodeURIComponent(window.location.href) 
+                    + "&text=" 
+                    + encodeURIComponent(JSON.stringify(flexContents));
                 
-                // เปิดหน้าต่างใหม่ขนาดพอดีจอสำหรับเลือกส่งหาเพื่อน/กลุ่มบนคอมพิวเตอร์
+                // เปิดหน้าต่างใหม่ขนาดพอดีจอสำหรับเลือกส่งหาเพื่อนหรือกลุ่มบนคอมพิวเตอร์ (PC)
                 window.open(lineShareUrl, 'LineShare', 'width=500,height=600,resizable=yes,scrollbars=yes');
             }
 
