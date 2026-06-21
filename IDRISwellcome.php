@@ -324,7 +324,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     }
 
      // ==========================
-    // Share Flex Message (เวอร์ชันรองรับ PC และมือถือ 100% ตัวจริง)
+    // Share Flex Message (เวอร์ชันจบงาน เสถียรที่สุดบน PC และมือถือ)
     // ==========================
     async function shareFlex() {
 
@@ -336,7 +336,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
         }
 
         try {
-            // 💡 1. ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์ดั้งเดิม (shareTargetPicker)
+            // 💡 1. ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์การ์ดดั้งเดิม (shareTargetPicker)
             if (typeof liff !== "undefined" && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
                 
                 const result = await liff.shareTargetPicker([dynamicFlexJson]);
@@ -346,17 +346,14 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 
             } else {
                 
-                // 💡 2. [ท่อนแก้ไขสำหรับ PC] ดึงเอาเฉพาะก้อน "contents" (โครงสร้าง Bubble ของ Flex) ออกมาแปลงค่า
-                const flexContents = dynamicFlexJson.contents;
+                // 💡 2. [ท่อนปลดล็อกสำหรับ PC] ดึงลิงก์ปลายทางที่คุณกรอกในช่อง Target Link ออกมาตรงๆ
+                const targetLinkUrl = document.getElementById("targetUrl").value.trim() || window.location.href;
                 
-                // ✅ ซ่อมแซมลิงก์แชร์ตามหลักสากลของ LINE (ใส่ตัวอักษรและโครงสร้าง URL ให้ครบถ้วน)
-                const lineShareUrl = "https://line.me" 
-                    + encodeURIComponent(window.location.href) 
-                    + "&text=" 
-                    + encodeURIComponent(JSON.stringify(flexContents));
+                // ✅ ใช้โครงสร้างส่งแชร์ลิงก์ทางการของ LINE ป้องกันปัญหาข้อความสเปกเพี้ยนบนคอมพิวเตอร์
+                const cleanShareUrl = "https://line.me" + encodeURIComponent(targetLinkUrl);
                 
-                // เปิดหน้าต่างใหม่ขนาดพอดีจอสำหรับเลือกส่งหาเพื่อนหรือกลุ่มบนคอมพิวเตอร์ (PC)
-                window.open(lineShareUrl, 'LineShare', 'width=500,height=600,resizable=yes,scrollbars=yes');
+                // สั่งเปิดหน้าต่างป๊อปอัปสากลขนาดพอดีจอสำหรับเลือกเพื่อน/กลุ่มบน PC ทันที
+                window.open(cleanShareUrl, 'LineShare', 'width=500,height=600,resizable=yes,scrollbars=yes');
             }
 
         } catch (error) {
