@@ -324,7 +324,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     }
 
     // ==========================
-    // Share Flex Message (เวอร์ชันจบงาน เสถียรสูงสุดบน PC และมือถือ 100%)
+    // Share Flex Message (เวอร์ชันเคลียร์บั๊กบราวเซอร์ PC บล็อกลิงก์ 100%)
     // ==========================
     async function shareFlex() {
 
@@ -346,20 +346,23 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 
             } else {
                 
-                // 💡 2. [ท่อนเด็ดสำหรับ PC] ใช้โครงสร้างพิกัดลิงก์ LINE LINEIT Share ตัวจริงที่สั้นและสะอาดที่สุด 
-                // ตัดโครงสร้างที่ซ้อนกันออกทั้งหมด และส่งเฉพาะโครงสร้างข้อความ/รูปภาพไปแชร์
+                // 💡 2. [ท่อนเด็ดสำหรับ PC] เปลี่ยนวิธีส่งค่าแบบสั้นสุดๆ ป้องกันบราวเซอร์แจ้งเตือน URL Invalid
                 const targetUrlInput = document.getElementById("targetUrl").value.trim();
-                const imageUrlInput = document.getElementById("imageUrl").value.trim();
                 
-                // จัดระเบียบข้อความที่จะส่งพ่วงไปกับการ์ดเพื่อความสวยงามบนหน้าจอ PC
-                const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์ปลายทาง: " + targetUrlInput;
-
-                // 🔗 สร้าง URL ปลายทางสากลของ LINE สำหรับใช้บนคอมพิวเตอร์โดยเฉพาะ
-                const lineShareUrl = "https://line.me" 
-                    + encodeURIComponent(shareText + "\n" + imageUrlInput);
+                // ใช้ลิงก์แชร์สากลตัวที่เสถียรและสั้นที่สุดของ LINE (ส่งเฉพาะข้อความและลิงก์ปลายทางพอ)
+                const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดู: " + targetUrlInput;
+                const cleanLineUrl = "https://line.me" + encodeURIComponent(shareText);
                 
-                // สั่งเปิดหน้าต่างป๊อปอัปขนาดพอดีจอสำหรับเลือกส่งหาเพื่อนหรือกลุ่มบนคอมพิวเตอร์ (PC)
-                window.open(lineShareUrl, 'LineShare', 'width=600,height=600,resizable=yes,scrollbars=yes');
+                // 🛠️ แก้ไขจุดตาย: สร้างแท็กลิงก์จำลองขึ้นมาในใจแล้วสั่งคลิกเปิดแท็บใหม่ 
+                // วิธีนี้บราวเซอร์ PC ทุกตัว (Chrome, Edge) จะมองว่าเป็นการคลิกปกติ ไม่ใช่ข้อผิดพลาดคำสั่งและปล่อยผ่านทันที
+                const linkActivator = document.createElement('a');
+                linkActivator.href = cleanLineUrl;
+                linkActivator.target = '_blank'; // บังคับเปิดแท็บใหม่
+                linkActivator.rel = 'noopener noreferrer';
+                
+                document.body.appendChild(linkActivator);
+                linkActivator.click(); // สั่งรันคลิกทะลุกรอบเออร์เรอร์
+                document.body.removeChild(linkActivator);
             }
 
         } catch (error) {
