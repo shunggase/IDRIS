@@ -46,7 +46,7 @@ if (isset($_POST['login'])) {
         <img class="mb-4" src="https://img2.pic.in.th/de114711-2369-4e5e-8b8c-10c6ab4dfb77.png" alt="" height="250">
         <h1 class="h3 mb-3 fw-normal"><b>IDRIS</b> - Login</h1>
         <hr>
-        <form method="post" action="index.php">
+        <form method="post" action="signin.php">
             <div class="mb-3">
                 <label for="username" class="form-label">User Name</label>
                 <input type="text" class="form-control" id="username" name="username">
