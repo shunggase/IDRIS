@@ -18,7 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'])) {
             $_SESSION['id'] = $num['id'];
             $_SESSION['fullname'] = $num['fullname'];
             
-            // ใช้ JavaScript บังคับล้างแคชบราวเซอร์เพื่อทะลุเข้าหน้า welcome.php
+            //  เพิ่มระบบบันทึกคุ้กกี้เพื่อส่งสิทธิ์ข้ามเครื่องแบบ Serverless (คุ้กกี้อยู่ได้ 1 วัน)
+            setcookie('user_id', $num['id'], time() + 86400, "/", "", true, true);
+            setcookie('user_fullname', $num['fullname'], time() + 86400, "/", "", true, true);
+            
             echo "<script>
                 alert('Login Success!');
                 window.location.href = 'welcome.php?v=" . time() . "';
@@ -40,8 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'])) {
     }
 }
 ?>
-
-
 
 <!doctype html>
 <html lang="en">

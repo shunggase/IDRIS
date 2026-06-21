@@ -1,20 +1,23 @@
 <?php
-// ตั้งค่าระบบเซสชันให้รองรับ Serverless และ Cookie บน Vercel
-ini_set('session.cookie_samesite', 'Lax');
-ini_set('session.cookie_secure', '1'); // บังคับใช้งานผ่าน https:// ของ Vercel
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// เช็กระบบความปลอดภัย: หากยังไม่ได้ล็อกอินให้ส่งกลับหน้า login
+// ใช้งานคุ้กกี้สำรองหาก Vercel เคลียร์ค่าเซสชันหลักทิ้งระหว่างย้ายหน้า
+if (isset($_COOKIE['user_id']) && !empty($_COOKIE['user_id'])) {
+    $_SESSION['id'] = $_COOKIE['user_id'];
+    $_SESSION['fullname'] = $_COOKIE['user_fullname'];
+}
+
+// ระบบความปลอดภัยเช็กสิทธิ์: หากไร้ร่องรอยคุ้กกี้และเซสชันจริงให้ดีดกลับหน้าล็อกอิน
 if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     header("Location: signin.php?auth=failed&v=" . time());
     exit();
 }
 
-// ดึงค่ามาพักไว้ในตัวแปรเพื่อไม่ให้ระบบเตือนเวลาเปลี่ยนหน้าชั่วคราว
-$session_fullname = isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'User';
+$session_fullname = $_SESSION['fullname'];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
