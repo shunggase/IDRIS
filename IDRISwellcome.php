@@ -1,22 +1,36 @@
-<?php
+//  เพิ่มระบบเปิดหน่วยความจำบัฟเฟอร์ไว้บรรทัดแรกสุด ติดกับ <?php ด้านบนสุดของไฟล์
+ob_start();
 
+if (session_status() == PHP_SESSION_NONE) {
     session_start();
-    require_once('LineLogin.php');
+}
+require_once('LineLogin.php');
 
-    if (!isset($_SESSION['id']) || !isset($_SESSION['profile'])) {
-        header("Location: welcome.php");
-        exit();
-    } 
+// 💡 ตรวจสอบและดึงค่าคุกกี้สำรองหากเซสชันหลักหลุดหายระหว่างข้ามแพลตฟอร์ม
+if (isset($_COOKIE['user_id']) && !empty($_COOKIE['user_id'])) {
+    $_SESSION['id'] = $_COOKIE['user_id'];
+}
+if (isset($_COOKIE['user_fullname']) && !empty($_COOKIE['user_fullname'])) {
+    $_SESSION['fullname'] = $_COOKIE['user_fullname'];
+}
+
+// ระบบดักจับความปลอดภัย: หากตรวจสอบไม่พบร่องรอยสิทธิ์จริง ให้ดีดกลับหน้าล็อกอิน
+if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
+    header("Location: signin.php?auth=failed&v=" . time());
+    exit();
+} 
+
 
     $user_id = $_SESSION['id']; 
     $profile = $_SESSION['profile']; 
 
-    $db_host = "localhost";
-    $db_user = "root";           
-    $db_pass = "";               
-    $db_name = "register_idris"; 
+    $db_host = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: "localhost";
+    $db_user = $_ENV['DB_USER'] ?? getenv('DB_USER') ?: "root";           
+    $db_pass = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?: "";               
+    $db_name = $_ENV['DB_NAME'] ?? getenv('DB_NAME') ?: "register_idris"; 
+    $db_port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: "16494"; // พอร์ตเสริมสำหรับ Aiven
 
-    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+    $conn = new mysqli($db_host, $db_user, $db_pass, $db_name, $db_port);
     $conn->set_charset("utf8mb4");
 
     if ($conn->connect_error) {
@@ -166,7 +180,7 @@
     // ==========================
     // LIFF Configuration
     // ==========================
-    const myLiffId = "YOUR_LIFF_ID"; // 🛠️ อย่าลืมเปลี่ยนเป็น LIFF ID จริงของคุณ
+    const myLiffId = "2010383431-NwcATXJE"; // 🛠️ อย่าลืมเปลี่ยนเป็น LIFF ID จริงของคุณ
     let dynamicFlexJson = null;
 
     document.addEventListener("DOMContentLoaded", function () {

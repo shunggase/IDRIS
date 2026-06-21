@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 require_once('LineLogin.php');
 
@@ -39,6 +40,9 @@ if (isset($token_array['id_token']) || isset($token_array['access_token'])) {
             "Authorization: Bearer " . $access_token
         ]);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
         $line_raw_profile = curl_exec($ch);
         curl_close($ch);
 
