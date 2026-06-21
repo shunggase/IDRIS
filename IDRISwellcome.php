@@ -105,7 +105,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     <main class="container my-4">
         <!-- ส่วนข้อมูลผู้ใช้เดิม -->
         <div class="bg-light p-4 rounded mb-4">
-            <?php if (!empty($profile['pictureUrl'])): ?>
+            <?php if (isset($profile['pictureUrl']) && !empty($profile['pictureUrl'])): ?>
                 <img src="<?php echo htmlspecialchars($profile['pictureUrl'], ENT_QUOTES, 'UTF-8'); ?>" alt="Profile Picture" class="img-thumbnail mb-3" width="150">
             <?php else: ?>
                 <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 150px; height: 150px;">No Image</div>
