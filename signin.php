@@ -9,9 +9,8 @@ if (isset($_POST['login'])) {
     $password = md5($_POST['password']);
 
     $result = $userdata->signin($uname, $password);
-    $num = mysqli_fetch_array($result);
-
-    if ($num > 0) {
+    if ($result && mysqli_num_rows($result) > 0) {
+        $num = mysqli_fetch_array($result); // นำข้อมูลมาเก็บเข้าเซสชันด้านล่างตามปกติ
         $_SESSION['id'] = $num['id'];
         $_SESSION['fullname'] = $num['fullname'];
         echo "<script>alert('Login Success!');</script>";
