@@ -323,8 +323,8 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
 
     }
 
-     // ==========================
-    // Share Flex Message (เวอร์ชันจบงาน เสถียรที่สุดบน PC และมือถือ)
+    // ==========================
+    // Share Flex Message (เวอร์ชันจบงาน เสถียรสูงสุดบน PC และมือถือ 100%)
     // ==========================
     async function shareFlex() {
 
@@ -336,7 +336,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
         }
 
         try {
-            // 💡 1. ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์การ์ดดั้งเดิม (shareTargetPicker)
+            // 💡 1. ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์ตรงดั้งเดิม (shareTargetPicker)
             if (typeof liff !== "undefined" && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
                 
                 const result = await liff.shareTargetPicker([dynamicFlexJson]);
@@ -346,14 +346,20 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 
             } else {
                 
-                // 💡 2. [ท่อนปลดล็อกสำหรับ PC] ดึงลิงก์ปลายทางที่คุณกรอกในช่อง Target Link ออกมาตรงๆ
-                const targetLinkUrl = document.getElementById("targetUrl").value.trim() || window.location.href;
+                // 💡 2. [ท่อนเด็ดสำหรับ PC] ใช้โครงสร้างพิกัดลิงก์ LINE LINEIT Share ตัวจริงที่สั้นและสะอาดที่สุด 
+                // ตัดโครงสร้างที่ซ้อนกันออกทั้งหมด และส่งเฉพาะโครงสร้างข้อความ/รูปภาพไปแชร์
+                const targetUrlInput = document.getElementById("targetUrl").value.trim();
+                const imageUrlInput = document.getElementById("imageUrl").value.trim();
                 
-                // ✅ ใช้โครงสร้างส่งแชร์ลิงก์ทางการของ LINE ป้องกันปัญหาข้อความสเปกเพี้ยนบนคอมพิวเตอร์
-                const cleanShareUrl = "https://line.me" + encodeURIComponent(targetLinkUrl);
+                // จัดระเบียบข้อความที่จะส่งพ่วงไปกับการ์ดเพื่อความสวยงามบนหน้าจอ PC
+                const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์ปลายทาง: " + targetUrlInput;
+
+                // 🔗 สร้าง URL ปลายทางสากลของ LINE สำหรับใช้บนคอมพิวเตอร์โดยเฉพาะ
+                const lineShareUrl = "https://line.me" 
+                    + encodeURIComponent(shareText + "\n" + imageUrlInput);
                 
-                // สั่งเปิดหน้าต่างป๊อปอัปสากลขนาดพอดีจอสำหรับเลือกเพื่อน/กลุ่มบน PC ทันที
-                window.open(cleanShareUrl, 'LineShare', 'width=500,height=600,resizable=yes,scrollbars=yes');
+                // สั่งเปิดหน้าต่างป๊อปอัปขนาดพอดีจอสำหรับเลือกส่งหาเพื่อนหรือกลุ่มบนคอมพิวเตอร์ (PC)
+                window.open(lineShareUrl, 'LineShare', 'width=600,height=600,resizable=yes,scrollbars=yes');
             }
 
         } catch (error) {
