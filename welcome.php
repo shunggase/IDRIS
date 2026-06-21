@@ -1,4 +1,7 @@
 <?php
+//  บรรทัดที่ 1: บังคับเปิดระบบบัฟเฟอร์ ห้ามมีตัวอักษรหรือช่องว่างก่อนคำนี้เด็ดขาด
+ob_start(); 
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
