@@ -175,11 +175,12 @@ $conn->close();
 
         /* ===== WELCOME BANNER ===== */
         .welcome-banner {
-            background: linear-gradient(135deg, #1a6b3a 0%, #0d8c3e 60%, #00c853 50%);
+            background: linear-gradient(135deg, #1a6b3a 0%, #0d8c3e 60%, #00c853 100%);
             border: 1px solid #00c853;
             border-radius: 10px;
             padding: 18px 24px;
             margin: 20px 20px 0;
+            width: calc(50% - 10px);
         }
         .welcome-banner h2 {
             font-size: 22px;
