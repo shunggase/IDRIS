@@ -420,10 +420,10 @@ $conn->close();
 <!-- ===== NAVBAR ===== -->
 <nav class="idris-navbar">
     <div class="brand-logo">
-        <div class="shield-icon">&#x1F6E1;</div>
+        <div class="IDRISLOGO.png">&#x1F6E1;</div>
         <div>
-            <div class="brand-title">PROJECT IDRIS &nbsp;-&nbsp; LINE Flex Message Creator &amp; Share</div>
-            <div class="brand-subtitle">Intelligent Digital Response &amp; Investigation System</div>
+            <div class="brand-title">PROJECT IDRIS &nbsp;-&nbsp; Intelligent Digital Response &amp; Investigation System</div>
+            <div class="brand-subtitle">LINE Flex Message Creator &amp; Share</div>
         </div>
     </div>
     <div class="user-info">
