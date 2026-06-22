@@ -176,8 +176,9 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                         
                         <!-- ปุ่มสำหรับแชร์ส่งเข้าไลน์กลุ่ม/เพื่อน -->
                         <div class="d-grid gap-2 mt-3">
-                            <!-- แก้ไขชื่อฟังก์ชันใน onclick เป็น shareFlex() ให้ตรงกับสมองกล JavaScript ด้านล่างเพื่อปลดล็อกปุ่มแชร์ -->
-                            <button type="button" onclick="shareFlex()" class="btn btn-success btn-lg">💚 ส่งและแชร์ไปที่ LINE</button>
+                            <a id="linePcShareLink" href="https://line.me" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                                <button type="button" onclick="shareFlex()" class="btn btn-success btn-lg w-100">💚 ส่งและแชร์ไปที่ LINE</button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -323,11 +324,10 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
 
     }
 
-        // ==========================
-    // Share Flex Message (เวอร์ชันจบงาน ปลอดภัย ไร้เออร์เรอร์บน PC และมือถือ 100%)
+    // ==========================
+    // Share Flex Message
     // ==========================
     async function shareFlex() {
-
         generatePreview();
 
         if (!dynamicFlexJson) {
@@ -336,37 +336,21 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
         }
 
         try {
-            // 💡 1. ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์ตรงดั้งเดิม (shareTargetPicker)
+            // 💡 ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์ตรงดั้งเดิม
             if (typeof liff !== "undefined" && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
-                
                 const result = await liff.shareTargetPicker([dynamicFlexJson]);
                 if (result && result.status === 'success') {
                     alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
                 }
-                
             } else {
-                
-                // 💡 2. [ท่อนเด็ดสำหรับ PC] แก้ไขปัญหา URL Invalid แบบเด็ดขาด
-                const targetUrlInput = document.getElementById("targetUrl").value.trim();
-                
-                // สรุปข้อความสั้นกระชับสำหรับส่งแชร์บนคอมพิวเตอร์
-                const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดูระบบ: " + targetUrlInput;
-                
-                // ✅ ใช้โดเมนเว็บหลักสำหรับส่งแชร์สากลของ LINE (Social Plugin) ปลอดภัยบน PC ทุกเครื่องในโลก
-                const cleanLineUrl = "https://line.me" 
-                    + encodeURIComponent(targetUrlInput) 
-                    + "&text=" 
-                    + encodeURIComponent(shareText);
-                
-                // สั่งกระโดดสลับเปลี่ยนหน้าต่างเดิมเข้าสู่เว็บแชร์ทางการของ LINE ทันทีอย่างไร้รอยต่อ
-                window.location.href = cleanLineUrl;
+                // 💡 บน PC ลิงก์ตรงที่ครอบปุ่มอยู่ด้านล่างจะทำงานเปิดหน้าแชร์ให้โดยอัตโนมัติทันที
+                console.log("เปิดใช้งานผ่านเว็บบราวเซอร์สากลบน PC");
             }
-
         } catch (error) {
             console.error(error);
-            alert("เกิดข้อผิดพลาด : " + error.message);
         }
     }
+
 
 </script>
 </body>
