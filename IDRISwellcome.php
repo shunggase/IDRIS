@@ -190,129 +190,197 @@ $conn->close();
             integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
             crossorigin="anonymous"></script>
 
-    <script>
-        // ==========================
-        // LIFF Configuration
-        // ==========================
-        const myLiffId = "2010383431-NwcATXJE";
-let liffReady = false;
-let dynamicFlexJson = null;
+<script>
+    // ==========================
+    // LIFF Configuration
+    // ==========================
+    const myLiffId = "2010383431-NwcATXJE";
+    let liffReady = false;
+    let dynamicFlexJson = null;
 
-document.addEventListener("DOMContentLoaded", function () {
-    const checkLiffInterval = setInterval(() => {
-        if (typeof liff !== "undefined") {
-            clearInterval(checkLiffInterval);
+    document.addEventListener("DOMContentLoaded", function () {
 
-            liff.init({ liffId: myLiffId })
-                .then(() => {
-                    liffReady = true;
-                    console.log("LIFF initialized");
-
-                    // ✅ แก้ไข: ถ้า LIFF ยังไม่ได้ Login → Login ทันที
-                    // เพราะ PHP Session Login ≠ LIFF Login
-                    if (!liff.isLoggedIn()) {
-                        console.log("LIFF not logged in → redirecting to LINE login...");
-                        liff.login({
-                            redirectUri: window.location.href  // กลับมาหน้าเดิมหลัง Login
-                        });
-                        return;
-                    }
-
-                    console.log("LIFF logged in successfully");
-
-                    const imageUrl = document.getElementById("imageUrl").value.trim();
-                    const targetUrl = document.getElementById("targetUrl").value.trim();
-                    if (imageUrl && targetUrl) {
-                        generatePreview();
-                    }
-                })
-                .catch(err => {
-                    console.error("LIFF init failed:", err);
-                });
+        // ✅ Fix 1: เรียก generatePreview() ทันทีที่โหลดหน้า ไม่รอ LIFF
+        const imageUrl = document.getElementById("imageUrl").value.trim();
+        const targetUrl = document.getElementById("targetUrl").value.trim();
+        if (imageUrl && targetUrl) {
+            generatePreview();
         }
-    }, 300);
 
-    setTimeout(() => clearInterval(checkLiffInterval), 10000);
-});
+        // ✅ Fix 2: ป้องกัน LIFF Login Loop — เช็กก่อนว่าเคย redirect มาแล้วหรือยัง
+        const urlParams = new URLSearchParams(window.location.search);
+        const alreadyRedirected = sessionStorage.getItem('liff_login_attempted');
 
-// ==========================
-// Share Flex Message
-// ==========================
-async function shareFlex() {
-    generatePreview();
+        const checkLiffInterval = setInterval(() => {
+            if (typeof liff !== "undefined") {
+                clearInterval(checkLiffInterval);
 
-    if (!dynamicFlexJson) {
-        alert("กรุณาสร้างข้อความพรีวิวก่อนกดแชร์ครับ");
-        return;
-    }
+                liff.init({ liffId: myLiffId })
+                    .then(() => {
+                        liffReady = true;
+                        console.log("LIFF initialized");
 
-    // ✅ แก้ไข: เช็ก LIFF พร้อมและ Login แล้วก่อนทุกครั้ง
-    if (!liffReady) {
-        alert("ระบบ LINE กำลังโหลด กรุณารอสักครู่แล้วลองใหม่");
-        return;
-    }
+                        if (!liff.isLoggedIn()) {
+                            // ✅ Fix 3: เช็กว่าเคย redirect แล้วหรือยัง ป้องกัน Loop
+                            if (!alreadyRedirected) {
+                                sessionStorage.setItem('liff_login_attempted', '1');
+                                liff.login({ redirectUri: window.location.href });
+                            } else {
+                                // ลอง redirect ไปแล้วแต่ยังไม่ login ได้ → แสดงปุ่มเปิดผ่าน LIFF URL
+                                console.warn("LIFF login failed after redirect");
+                                showLiffLoginBanner();
+                            }
+                        } else {
+                            // Login สำเร็จ → ล้าง flag
+                            sessionStorage.removeItem('liff_login_attempted');
+                            console.log("LIFF logged in successfully");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("LIFF init failed:", err);
+                        showLiffLoginBanner();
+                    });
+            }
+        }, 300);
 
-    if (!liff.isLoggedIn()) {
-        // ถ้า Login หลุด → พา Login ใหม่
-        liff.login({ redirectUri: window.location.href });
-        return;
-    }
+        setTimeout(() => clearInterval(checkLiffInterval), 10000);
+    });
 
-    const shareBtn = document.querySelector("button[onclick='shareFlex()']");
-    const originalText = shareBtn.innerHTML;
-    shareBtn.innerHTML = "กำลังเปิด Share Target Picker...";
-    shareBtn.disabled = true;
+    // ==========================
+    // Generate Preview (ทำงานอิสระจาก LIFF)
+    // ==========================
+    function generatePreview() {
+        const imageUrl = document.getElementById("imageUrl").value.trim();
+        const targetUrl = document.getElementById("targetUrl").value.trim();
+        const ratio = document.getElementById("aspectRatio").value.trim() || "30:25";
 
-    try {
-        const result = await liff.shareTargetPicker([dynamicFlexJson]);
-        if (result && result.status === 'success') {
-            alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
+        if (!imageUrl || !targetUrl) {
+            alert("กรุณากรอกลิงก์รูปภาพและ Target Link");
+            return;
         }
-    } catch (error) {
-        console.error(error);
-        alert("เกิดข้อผิดพลาด: " + error.message);
-    } finally {
-        shareBtn.innerHTML = originalText;
-        shareBtn.disabled = false;
+
+        const imgElement = document.getElementById("imagePreview");
+        const anchorElement = document.getElementById("previewAnchor");
+        const placeholder = document.getElementById("noImagePlaceholder");
+
+        imgElement.src = imageUrl;
+        anchorElement.href = targetUrl;
+        placeholder.style.display = "none";
+        anchorElement.style.display = "block";
+
+        const ratioParts = ratio.split(":");
+        if (ratioParts.length === 2) {
+            const w = parseFloat(ratioParts[0]);
+            const h = parseFloat(ratioParts[1]);
+            imgElement.style.aspectRatio = (!isNaN(w) && !isNaN(h) && w > 0 && h > 0)
+                ? `${w} / ${h}` : "30 / 25";
+        } else {
+            imgElement.style.aspectRatio = "30 / 25";
+        }
+
+        dynamicFlexJson = {
+            type: "flex",
+            altText: "sent a photo",
+            contents: {
+                type: "bubble",
+                hero: {
+                    type: "image",
+                    url: imageUrl,
+                    size: "full",
+                    aspectRatio: ratio,
+                    aspectMode: "cover",
+                    action: { type: "uri", uri: targetUrl }
+                }
+            }
+        };
+
+        document.getElementById("FlexCode").value = JSON.stringify(dynamicFlexJson, null, 2);
     }
-}
 
-// ==========================
-// แสดง QR Code สำหรับ PC
-// ==========================
-function showQRModal() {
-    const liffUrl = "https://liff.line.me/" + myLiffId;
-    const qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" 
-                     + encodeURIComponent(liffUrl);
+    // ==========================
+    // Clear Fields
+    // ==========================
+    function clearFields() {
+        document.getElementById("imageUrl").value = "";
+        document.getElementById("targetUrl").value = "";
+        document.getElementById("aspectRatio").value = "30:25";
+        document.getElementById("FlexCode").value = "";
+        document.getElementById("previewAnchor").style.display = "none";
+        document.getElementById("imagePreview").src = "";
+        document.getElementById("noImagePlaceholder").style.display = "flex";
+        document.getElementById("previewAnchor").href = "#";
+        dynamicFlexJson = null;
+    }
 
-    // สร้าง Modal แบบ Bootstrap
-    const modalHtml = `
-        <div class="modal fade" id="qrModal" tabindex="-1">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-center">
-              <div class="modal-header">
-                <h5 class="modal-title">แสกน QR เพื่อส่ง Flex Message ผ่านแอป LINE</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                <p class="text-muted small">Flex Message ส่งได้เฉพาะในแอป LINE บนมือถือเท่านั้น</p>
-                <img src="${qrApiUrl}" alt="QR Code" width="200" height="200" class="mb-3">
-                <p class="small">หรือคัดลอกลิงก์นี้ไปเปิดในมือถือ:<br>
-                  <a href="${liffUrl}" target="_blank" class="text-break">${liffUrl}</a>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>`;
+    // ==========================
+    // Share Flex Message
+    // ==========================
+    async function shareFlex() {
+        generatePreview();
 
-    // ลบ Modal เก่าก่อนถ้ามี
-    const oldModal = document.getElementById('qrModal');
-    if (oldModal) oldModal.remove();
+        if (!dynamicFlexJson) {
+            alert("กรุณาสร้างข้อความพรีวิวก่อนกดแชร์ครับ");
+            return;
+        }
 
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    const modal = new bootstrap.Modal(document.getElementById('qrModal'));
-    modal.show();
-}
-    </script>
+        if (!liffReady) {
+            alert("ระบบ LINE กำลังโหลด กรุณารอสักครู่แล้วลองใหม่");
+            return;
+        }
+
+        if (!liff.isLoggedIn()) {
+            showLiffLoginBanner();
+            return;
+        }
+
+        const shareBtn = document.querySelector("button[onclick='shareFlex()']");
+        const originalText = shareBtn.innerHTML;
+        shareBtn.innerHTML = "กำลังเปิด Share Target Picker...";
+        shareBtn.disabled = true;
+
+        try {
+            const result = await liff.shareTargetPicker([dynamicFlexJson]);
+            if (result && result.status === 'success') {
+                alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
+            }
+        } catch (error) {
+            console.error(error);
+            // ✅ Fix 4: ถ้า shareTargetPicker ล้มเหลวบน PC → แสดง LIFF URL แทน
+            if (error.code === 'FORBIDDEN' || error.message.includes('not supported')) {
+                showLiffLoginBanner();
+            } else {
+                alert("เกิดข้อผิดพลาด: " + error.message);
+            }
+        } finally {
+            shareBtn.innerHTML = originalText;
+            shareBtn.disabled = false;
+        }
+    }
+
+    // ==========================
+    // ✅ Fix 5: แสดง Banner แนะนำเปิดผ่าน LIFF URL สำหรับ PC
+    // ==========================
+    function showLiffLoginBanner() {
+        const liffUrl = "https://liff.line.me/" + myLiffId;
+
+        // ลบ banner เก่าก่อน
+        const old = document.getElementById('liffBanner');
+        if (old) old.remove();
+
+        const banner = document.createElement('div');
+        banner.id = 'liffBanner';
+        banner.className = 'alert alert-warning alert-dismissible fade show mt-3';
+        banner.innerHTML = `
+            <strong>แชร์ผ่าน PC ต้องเข้าผ่านลิงก์ LIFF</strong><br>
+            กรุณาเปิดลิงก์นี้ในเบราว์เซอร์เพื่อยืนยันตัวตนกับ LINE แล้วแชร์ได้ทันที:<br>
+            <a href="${liffUrl}" target="_blank" class="btn btn-warning btn-sm mt-2">
+                เปิดหน้านี้ผ่าน LINE (LIFF)
+            </a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.querySelector('.card-body').prepend(banner);
+    }
+</script>
 </body>
 </html>
