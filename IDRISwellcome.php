@@ -307,10 +307,7 @@ $conn->close();
             dynamicFlexJson = null;
         }
 
-        // ==========================
-        // Share Flex Message
-        // ==========================
-        async function shareFlex() {
+async function shareFlex() {
     generatePreview();
 
     if (!dynamicFlexJson) {
@@ -319,30 +316,66 @@ $conn->close();
     }
 
     try {
+        // ✅ กรณีที่ 1: เปิดในแอป LINE บนมือถือ → ส่ง Flex Message ได้จริง
         if (liffReady && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
-            // แชร์ผ่านแอป LINE บนมือถือ (Flex Message เต็มรูปแบบ)
             const result = await liff.shareTargetPicker([dynamicFlexJson]);
             if (result && result.status === 'success') {
                 alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
             }
+
+        // ✅ กรณีที่ 2: เปิดจาก Mobile Browser (ไม่ใช่แอป LINE) → ดึงเปิดในแอป LINE
+        } else if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+            const liffUrl = "https://liff.line.me/" + myLiffId;
+            if (confirm("กรุณาเปิดหน้านี้ในแอป LINE เพื่อส่ง Flex Message\nกด OK เพื่อเปิดแอป LINE")) {
+                window.location.href = liffUrl;
+            }
+
+        // ✅ กรณีที่ 3: PC Browser → แสดง QR Code ให้แสกนเปิดใน LINE มือถือ
         } else {
-            // ✅ แก้ไข: PC Fallback ใช้ LINE Social Plugin แทน
-            // line.me/R/share ไม่รองรับ PC Browser
-            const targetUrlInput = document.getElementById("targetUrl").value.trim();
-            const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์: " + targetUrlInput;
-
-            // ✅ URL นี้รองรับทั้ง PC Browser และ Mobile Browser
-            const shareUrl = "https://social-plugins.line.me/lineit/share?url="
-                + encodeURIComponent(targetUrlInput)
-                + "&text="
-                + encodeURIComponent(shareText);
-
-            window.open(shareUrl, "_blank", "width=600,height=500,noopener,noreferrer");
+            showQRModal();
         }
+
     } catch (error) {
         console.error(error);
         alert("เกิดข้อผิดพลาด: " + error.message);
     }
+}
+
+// ==========================
+// แสดง QR Code สำหรับ PC
+// ==========================
+function showQRModal() {
+    const liffUrl = "https://liff.line.me/" + myLiffId;
+    const qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" 
+                     + encodeURIComponent(liffUrl);
+
+    // สร้าง Modal แบบ Bootstrap
+    const modalHtml = `
+        <div class="modal fade" id="qrModal" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+              <div class="modal-header">
+                <h5 class="modal-title">แสกน QR เพื่อส่ง Flex Message ผ่านแอป LINE</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <p class="text-muted small">Flex Message ส่งได้เฉพาะในแอป LINE บนมือถือเท่านั้น</p>
+                <img src="${qrApiUrl}" alt="QR Code" width="200" height="200" class="mb-3">
+                <p class="small">หรือคัดลอกลิงก์นี้ไปเปิดในมือถือ:<br>
+                  <a href="${liffUrl}" target="_blank" class="text-break">${liffUrl}</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>`;
+
+    // ลบ Modal เก่าก่อนถ้ามี
+    const oldModal = document.getElementById('qrModal');
+    if (oldModal) oldModal.remove();
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+    modal.show();
 }
     </script>
 </body>
