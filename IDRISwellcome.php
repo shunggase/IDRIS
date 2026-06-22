@@ -474,11 +474,14 @@ $conn->close();
             </select>
 
             <div style="display:flex; gap:10px; margin-top:8px;">
-                <button class="btn-idris-primary" onclick="generatePreview()">Preview Code</button>
-                <button class="btn-idris-danger" onclick="clearFields()">Clear ค่า</button>
-                <button class="btn-share-line" id="shareBtnEl" onclick="shareFlex()">
-                <span>&#10024;</span> ส่งและแชร์ไปที่ LINE
-            </button>
+                <!-- ใส่สไตล์ flex: 1; เพิ่มเข้าไปในปุ่มทุกตัวเพื่อบีบให้ขนาดเท่ากันทั้งหมด -->
+                <button class="btn-idris-primary" style="flex: 1;" onclick="generatePreview()">Preview Code</button>
+                <button class="btn-idris-danger" style="flex: 1;" onclick="clearFields()">Clear ค่า</button>
+                
+                <!-- ปุ่มไลน์เพิ่มจัดระเบียบไอคอนให้อยู่ตรงกลางร่วมด้วย -->
+                <button class="btn-share-line" id="shareBtnEl" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
+                    <span>✨</span> ส่งและแชร์ไปที่ LINE
+                </button>
             </div>
         </div>
     </div>
