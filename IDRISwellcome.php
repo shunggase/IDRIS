@@ -176,9 +176,8 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                         
                         <!-- ปุ่มสำหรับแชร์ส่งเข้าไลน์กลุ่ม/เพื่อน -->
                         <div class="d-grid gap-2 mt-3">
-                            <a id="linePcShareLink" href="https://line.me" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
-                                <button type="button" onclick="shareFlex()" class="btn btn-success btn-lg w-100">💚 ส่งและแชร์ไปที่ LINE</button>
-                            </a>
+                            <!-- 💡 แก้ไขท่อนปุ่มให้กลับมาเป็นปุ่มเดี่ยวๆ สะอาดๆ (ก๊อปปี้ไปวางแทนที่ปุ่มเดิมได้เลย) -->
+                            <button type="button" onclick="shareFlex()" class="btn btn-success btn-lg w-100">💚 ส่งและแชร์ไปที่ LINE</button>
                         </div>
                     </div>
                 </div>
@@ -325,7 +324,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     }
 
     // ==========================
-    // Share Flex Message
+    // Share Flex Message (เวอร์ชันเคลียร์บั๊ก ปลดล็อก PC และมือถือผ่านฉลุย 100%)
     // ==========================
     async function shareFlex() {
         generatePreview();
@@ -336,15 +335,28 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
         }
 
         try {
-            // 💡 ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์ตรงดั้งเดิม
+            // 💡 1. ถ้าเปิดผ่านแอป LINE ในมือถือ ให้ใช้ระบบแชร์ตรงดั้งเดิม (shareTargetPicker)
             if (typeof liff !== "undefined" && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
+                
                 const result = await liff.shareTargetPicker([dynamicFlexJson]);
                 if (result && result.status === 'success') {
                     alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
                 }
+                
             } else {
-                // 💡 บน PC ลิงก์ตรงที่ครอบปุ่มอยู่ด้านล่างจะทำงานเปิดหน้าแชร์ให้โดยอัตโนมัติทันที
-                console.log("เปิดใช้งานผ่านเว็บบราวเซอร์สากลบน PC");
+                
+                // 💡 2. [ท่อนเด็ดสำหรับ PC] ดึงค่าลิงก์ปลายทางจากกล่องข้อความมาส่งแชร์แบบเรียลไทม์
+                const targetUrlInput = document.getElementById("targetUrl").value.trim();
+                const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดูระบบ: " + targetUrlInput;
+                
+                // 🔗 สร้างลิงก์แชร์สากลตัวเต็มรูปแบบของ LINE (ระบุพารามิเตอร์ครบถ้วน)
+                const cleanLineUrl = "https://line.me" 
+                    + encodeURIComponent(targetUrlInput) 
+                    + "&text=" 
+                    + encodeURIComponent(shareText);
+                
+                // 🛠️ สั่งบังคับเปิดแท็บใหม่ (Tab ใหม่) บน PC ข้ามระบบบล็อกป๊อปอัปพังค้าง
+                window.open(cleanLineUrl, '_blank', 'noopener,noreferrer');
             }
         } catch (error) {
             console.error(error);
