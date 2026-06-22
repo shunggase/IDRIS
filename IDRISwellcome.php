@@ -1,7 +1,7 @@
 <?php
 ob_start();
 
-// 💡 ปิดการแสดงผลข้อความแจ้งเตือนประเภท Warning และ Deprecated บนหน้าเว็บจริง
+// 💡 ปิดการแสดงผลข้อความแจ้งเตือนประเภท Warning และ Deprecated บนหน้าเว็บจริงเพื่อไม่ให้ดันดีไซน์เพี้ยน
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_WARNING);
 
 if (session_status() == PHP_SESSION_NONE) {
@@ -17,7 +17,7 @@ if (isset($_COOKIE['user_fullname']) && !empty($_COOKIE['user_fullname'])) {
     $_SESSION['fullname'] = $_COOKIE['user_fullname'];
 }
 
-// 💡 เพิ่มเติม: ดึงค่าคุกกี้โปรไฟล์ LINE สำรอง เพื่อแก้ไขบั๊กปุ่มไม่สลับบน Vercel
+// ดึงค่าคุกกี้โปรไฟล์ LINE สำรอง เพื่อแก้ไขบั๊กปุ่มไม่สลับบน Vercel
 if (isset($_COOKIE['line_profile_data']) && !empty($_COOKIE['line_profile_data'])) {
     $_SESSION['profile'] = json_decode($_COOKIE['line_profile_data'], true);
 }
@@ -57,8 +57,6 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
     $stmt->close();
     $conn->close();
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -102,17 +100,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
 </head>
 <body>
 
-
-    <div class="container mt-4">
-        <h1 class="mt-5">Welcome <?php echo htmlspecialchars($_SESSION['fullname'], ENT_QUOTES, 'UTF-8'); ?> To IDRIS</h1>
-        <hr>
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        </p>
-        <hr>
-    </div>
-
-        <?php require_once('nav.php'); ?>
+    <?php require_once('nav.php'); ?>
 
     <main class="container my-4">
         <!-- ส่วนข้อมูลผู้ใช้เดิม -->
@@ -139,7 +127,6 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                     <div class="col-md-5 mb-3">
                         <div class="mb-3">
                             <label for="imageUrl" class="form-label fw-bold">1. ลิงก์รูปภาพ (Image URL)</label>
-                            <!-- ปรับเปลี่ยนค่า value เริ่มต้นให้ชี้ตรงไฟล์รูปภาพจริงเพื่อไม่ให้ภาพพรีวิวแตก -->
                             <input type="url" class="form-control" id="imageUrl" placeholder="https://example.com" value="https://unsplash.com">
                         </div>
                         
@@ -176,7 +163,6 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                         
                         <!-- ปุ่มสำหรับแชร์ส่งเข้าไลน์กลุ่ม/เพื่อน -->
                         <div class="d-grid gap-2 mt-3">
-                            <!-- 💡 แก้ไขท่อนปุ่มให้กลับมาเป็นปุ่มเดี่ยวๆ สะอาดๆ (ก๊อปปี้ไปวางแทนที่ปุ่มเดิมได้เลย) -->
                             <button type="button" onclick="shareFlex()" class="btn btn-success btn-lg w-100">💚 ส่งและแชร์ไปที่ LINE</button>
                         </div>
                     </div>
@@ -185,22 +171,18 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
         </div>
     </main>
 
-
-    <!-- นำเข้าคลังคำสั่งสคริปต์ควบคุม JavaScript ของ Bootstrap 5 ตัวจริงเพื่อเปิดระบบปุ่มกด Dropdown -->
+    <!-- นำเข้าคลังคำสั่งสคริปต์ควบคุม JavaScript ของ Bootstrap 5 -->
     <script src="https://jsdelivr.net" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://jsdelivr.net" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 
-    <!-- ระบบ JavaScript ควบคุมการจัดการ Flex Message และ LIFF -->
 <script>
     // ==========================
     // LIFF Configuration
     // ==========================
-    const myLiffId = "2010383431-NwcATXJE"; // LIFF ID จริงผ่านการเปิดระบบแชร์แล้ว
+    const myLiffId = "2010383431-NwcATXJE"; 
     let dynamicFlexJson = null;
 
     document.addEventListener("DOMContentLoaded", function () {
-        
-        // วนเช็คจนกว่า LINE SDK จะโหลดเสร็จสมบูรณ์เพื่อป้องกันการล่ม
         const checkLiffInterval = setInterval(() => {
             if (typeof liff !== "undefined") {
                 clearInterval(checkLiffInterval);
@@ -211,11 +193,9 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 })
                 .then(() => {
                     console.log("LIFF initialized successfully");
-                    // บังคับสลับระบบให้ดึงภาพตัวอย่างมาพรีวิวขึ้นจอบน Vercel คลาวด์ทันที
                     const imageUrl = document.getElementById("imageUrl").value.trim();
                     const targetUrl = document.getElementById("targetUrl").value.trim();
                     if(imageUrl && targetUrl) {
-                        // เช็กหากมีฟังก์ชันพรีวิวให้เริ่มประมวลผลคำสั่งดึงภาพขึ้นกล่องจำลองทันที
                         if(typeof generatePreview === "function") {
                             generatePreview();
                         }
@@ -261,23 +241,13 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
             const widthRatio = parseFloat(ratioParts[0]);
             const heightRatio = parseFloat(ratioParts[1]);
 
-            if (!isNaN(widthRatio) &&
-                !isNaN(heightRatio) &&
-                widthRatio > 0 &&
-                heightRatio > 0) {
-
+            if (!isNaN(widthRatio) && !isNaN(heightRatio) && widthRatio > 0 && heightRatio > 0) {
                 imgElement.style.aspectRatio = `${widthRatio} / ${heightRatio}`;
-
             } else {
-
                 imgElement.style.aspectRatio = "30 / 25";
-
             }
-
         } else {
-
             imgElement.style.aspectRatio = "30 / 25";
-
         }
 
         // สร้าง Flex Message JSON
@@ -300,8 +270,7 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
             }
         };
 
-        document.getElementById("FlexCode").value =
-            JSON.stringify(dynamicFlexJson, null, 2);
+        document.getElementById("FlexCode").value = JSON.stringify(dynamicFlexJson, null, 2);
 
     }
 
@@ -316,9 +285,8 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
         document.getElementById("FlexCode").value = "";
 
         // ปรับภาพพื้นหลังพรีวิวให้กลับเป็น No Image ตัวอักษรคมชัดเมื่อเคลียร์ค่า
-        document.getElementById("imagePreview").src = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='100' height='100'><rect width='100%' height='100%' fill='%23eee'/><text x='50%' y='50%' font-size='12' font-family='sans-serif' text-anchor='middle' fill='%23aaa' dy='.3em'>No Image</text></svg>";
+        document.getElementById("imagePreview").src = "data:image/svg+xml;utf8,No Image";
         document.getElementById("previewAnchor").href = "#";
-
         dynamicFlexJson = null;
 
     }
@@ -349,21 +317,17 @@ if (!isset($_SESSION['id']) || empty($_SESSION['id'])) {
                 const targetUrlInput = document.getElementById("targetUrl").value.trim();
                 const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดูระบบ: " + targetUrlInput;
                 
-                // 🔗 สร้างลิงก์แชร์สากลตัวเต็มรูปแบบของ LINE (ระบุพารามิเตอร์ครบถ้วน)
-                const cleanLineUrl = "https://line.me" 
-                    + encodeURIComponent(targetUrlInput) 
-                    + "&text=" 
+                // ใช้ลิงก์แชร์หลักของ LINE ที่สะอาดและสากลที่สุด บราวเซอร์ PC ไม่บล็อกแน่นอน
+                const cleanLineUrl = "line.me"
+                    + encodeURIComponent(targetUrlInput)
+                    + "&text="
                     + encodeURIComponent(shareText);
                 
-                // 🛠️ สั่งบังคับเปิดแท็บใหม่ (Tab ใหม่) บน PC ข้ามระบบบล็อกป๊อปอัปพังค้าง
-                window.open(cleanLineUrl, '_blank', 'noopener,noreferrer');
+                window.location.href = cleanLineUrl;
             }
         } catch (error) {
             console.error(error);
+        alert("เกิดข้อผิดพลาด : " + error.message);
         }
     }
 
-
-</script>
-</body>
-</html>
