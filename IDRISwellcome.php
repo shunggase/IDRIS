@@ -476,6 +476,9 @@ $conn->close();
             <div style="display:flex; gap:10px; margin-top:8px;">
                 <button class="btn-idris-primary" onclick="generatePreview()">Preview Code</button>
                 <button class="btn-idris-danger" onclick="clearFields()">Clear ค่า</button>
+                <button class="btn-share-line" id="shareBtnEl" onclick="shareFlex()">
+                <span>&#10024;</span> ส่งและแชร์ไปที่ LINE
+            </button>
             </div>
         </div>
     </div>
@@ -507,9 +510,7 @@ $conn->close();
             <textarea class="json-box" id="FlexCode" readonly
                       placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
 
-            <button class="btn-share-line" id="shareBtnEl" onclick="shareFlex()">
-                <span>&#10024;</span> ส่งและแชร์ไปที่ LINE
-            </button>
+
         </div>
     </div>
 
