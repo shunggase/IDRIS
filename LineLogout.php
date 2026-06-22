@@ -1,20 +1,12 @@
 <?php
-ob_start();
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+session_destroy();
 
-// 1. เคลียร์เฉพาะข้อมูลโปรไฟล์ฝั่ง LINE ออกจากระบบเซสชัน
-if (isset($_SESSION['profile'])) {
-    unset($_SESSION['profile']);
-}
+// ลบ Cookie ทั้งหมดที่ตั้งไว้
+setcookie('user_id', '', time() - 3600, '/', '', true, true);
+setcookie('user_fullname', '', time() - 3600, '/', '', true, true);
+setcookie('line_profile_data', '', time() - 3600, '/', '', true, true);
 
-// 2. เคลียร์ค่าคุกกี้ที่เกี่ยวข้องกับรหัสความปลอดภัยของ LINE (ถ้ามี)
-if (isset($_COOKIE['line_state'])) {
-    setcookie('line_state', '', time() - 3600, '/');
-}
-
-// 3. สั่งเปลี่ยนเส้นทางดีดพาร่างของคุณส่งกลับไปสู่หน้า welcome.php พร้อมรหัสป้องกันแคช
-header("Location: welcome.php?logout=linesuccess&v=" . time());
+header("Location: welcome.php");
 exit();
 ?>
