@@ -311,34 +311,39 @@ $conn->close();
         // Share Flex Message
         // ==========================
         async function shareFlex() {
-            generatePreview();
+    generatePreview();
 
-            if (!dynamicFlexJson) {
-                alert("กรุณาสร้างข้อความพรีวิวก่อนกดแชร์ครับ");
-                return;
+    if (!dynamicFlexJson) {
+        alert("กรุณาสร้างข้อความพรีวิวก่อนกดแชร์ครับ");
+        return;
+    }
+
+    try {
+        if (liffReady && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
+            // แชร์ผ่านแอป LINE บนมือถือ (Flex Message เต็มรูปแบบ)
+            const result = await liff.shareTargetPicker([dynamicFlexJson]);
+            if (result && result.status === 'success') {
+                alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
             }
+        } else {
+            // ✅ แก้ไข: PC Fallback ใช้ LINE Social Plugin แทน
+            // line.me/R/share ไม่รองรับ PC Browser
+            const targetUrlInput = document.getElementById("targetUrl").value.trim();
+            const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์: " + targetUrlInput;
 
-            try {
-                // ✅ แก้ไข: เช็ค liffReady ก่อน เพื่อป้องกัน Error หาก LIFF init ยังไม่เสร็จ
-                if (liffReady && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
-                    // แชร์ผ่านแอป LINE บนมือถือโดยตรง
-                    const result = await liff.shareTargetPicker([dynamicFlexJson]);
-                    if (result && result.status === 'success') {
-                        alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
-                    }
-                } else {
-                    // ✅ แก้ไข: PC Fallback — URL ถูกต้องและสมบูรณ์
-                    const targetUrlInput = document.getElementById("targetUrl").value.trim();
-                    const shareText = "IDRIS - LINE Flex Message\nคลิกลิงก์เพื่อเปิดดูระบบ: " + targetUrlInput;
+            // ✅ URL นี้รองรับทั้ง PC Browser และ Mobile Browser
+            const shareUrl = "https://social-plugins.line.me/lineit/share?url="
+                + encodeURIComponent(targetUrlInput)
+                + "&text="
+                + encodeURIComponent(shareText);
 
-                    const cleanLineUrl = "https://line.me/R/share?text=" + encodeURIComponent(shareText);
-                    window.open(cleanLineUrl, "_blank");
-                }
-            } catch (error) {
-                console.error(error);
-                alert("เกิดข้อผิดพลาด: " + error.message);
-            }
+            window.open(shareUrl, "_blank", "width=600,height=500,noopener,noreferrer");
         }
+    } catch (error) {
+        console.error(error);
+        alert("เกิดข้อผิดพลาด: " + error.message);
+    }
+}
     </script>
 </body>
 </html>
