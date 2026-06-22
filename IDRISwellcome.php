@@ -195,118 +195,49 @@ $conn->close();
         // LIFF Configuration
         // ==========================
         const myLiffId = "2010383431-NwcATXJE";
-        let liffReady = false;
-        let dynamicFlexJson = null;
+let liffReady = false;
+let dynamicFlexJson = null;
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const checkLiffInterval = setInterval(() => {
-                if (typeof liff !== "undefined") {
-                    clearInterval(checkLiffInterval);
-                    console.log("พบ LINE LIFF SDK พร้อมใช้งานแล้ว");
+document.addEventListener("DOMContentLoaded", function () {
+    const checkLiffInterval = setInterval(() => {
+        if (typeof liff !== "undefined") {
+            clearInterval(checkLiffInterval);
 
-                    liff.init({ liffId: myLiffId })
-                        .then(() => {
-                            liffReady = true;
-                            console.log("LIFF initialized successfully");
+            liff.init({ liffId: myLiffId })
+                .then(() => {
+                    liffReady = true;
+                    console.log("LIFF initialized");
 
-                            const imageUrl = document.getElementById("imageUrl").value.trim();
-                            const targetUrl = document.getElementById("targetUrl").value.trim();
-                            if (imageUrl && targetUrl) {
-                                generatePreview();
-                            }
-                        })
-                        .catch(err => {
-                            console.error("LIFF initialization failed", err);
+                    // ✅ แก้ไข: ถ้า LIFF ยังไม่ได้ Login → Login ทันที
+                    // เพราะ PHP Session Login ≠ LIFF Login
+                    if (!liff.isLoggedIn()) {
+                        console.log("LIFF not logged in → redirecting to LINE login...");
+                        liff.login({
+                            redirectUri: window.location.href  // กลับมาหน้าเดิมหลัง Login
                         });
-                } else {
-                    console.log("กำลังรอโหลด LINE LIFF SDK...");
-                }
-            }, 300);
-
-            // หยุดรอหลัง 10 วินาที
-            setTimeout(() => clearInterval(checkLiffInterval), 10000);
-        });
-
-        // ==========================
-        // Generate Preview
-        // ==========================
-        function generatePreview() {
-            const imageUrl = document.getElementById("imageUrl").value.trim();
-            const targetUrl = document.getElementById("targetUrl").value.trim();
-            const ratio = document.getElementById("aspectRatio").value.trim() || "30:25";
-
-            if (!imageUrl || !targetUrl) {
-                alert("กรุณากรอกลิงก์รูปภาพและ Target Link");
-                return;
-            }
-
-            // แสดงรูปภาพ Preview
-            const imgElement = document.getElementById("imagePreview");
-            const anchorElement = document.getElementById("previewAnchor");
-            const placeholder = document.getElementById("noImagePlaceholder");
-
-            imgElement.src = imageUrl;
-            anchorElement.href = targetUrl;
-
-            // ✅ แก้ไข: ซ่อน placeholder แล้วแสดงรูป
-            placeholder.style.display = "none";
-            anchorElement.style.display = "block";
-
-            // ตั้งค่า Aspect Ratio
-            const ratioParts = ratio.split(":");
-            if (ratioParts.length === 2) {
-                const widthRatio = parseFloat(ratioParts[0]);
-                const heightRatio = parseFloat(ratioParts[1]);
-                if (!isNaN(widthRatio) && !isNaN(heightRatio) && widthRatio > 0 && heightRatio > 0) {
-                    imgElement.style.aspectRatio = `${widthRatio} / ${heightRatio}`;
-                } else {
-                    imgElement.style.aspectRatio = "30 / 25";
-                }
-            } else {
-                imgElement.style.aspectRatio = "30 / 25";
-            }
-
-            // สร้าง Flex Message JSON
-            dynamicFlexJson = {
-                type: "flex",
-                altText: "sent a photo",
-                contents: {
-                    type: "bubble",
-                    hero: {
-                        type: "image",
-                        url: imageUrl,
-                        size: "full",
-                        aspectRatio: ratio,
-                        aspectMode: "cover",
-                        action: {
-                            type: "uri",
-                            uri: targetUrl
-                        }
+                        return;
                     }
-                }
-            };
 
-            document.getElementById("FlexCode").value = JSON.stringify(dynamicFlexJson, null, 2);
+                    console.log("LIFF logged in successfully");
+
+                    const imageUrl = document.getElementById("imageUrl").value.trim();
+                    const targetUrl = document.getElementById("targetUrl").value.trim();
+                    if (imageUrl && targetUrl) {
+                        generatePreview();
+                    }
+                })
+                .catch(err => {
+                    console.error("LIFF init failed:", err);
+                });
         }
+    }, 300);
 
-        // ==========================
-        // Clear Fields
-        // ==========================
-        function clearFields() {
-            document.getElementById("imageUrl").value = "";
-            document.getElementById("targetUrl").value = "";
-            document.getElementById("aspectRatio").value = "30:25";
-            document.getElementById("FlexCode").value = "";
+    setTimeout(() => clearInterval(checkLiffInterval), 10000);
+});
 
-            // ✅ แก้ไข: ซ่อนรูปและแสดง placeholder กลับมา
-            document.getElementById("previewAnchor").style.display = "none";
-            document.getElementById("imagePreview").src = "";
-            document.getElementById("noImagePlaceholder").style.display = "flex";
-            document.getElementById("previewAnchor").href = "#";
-
-            dynamicFlexJson = null;
-        }
-
+// ==========================
+// Share Flex Message
+// ==========================
 async function shareFlex() {
     generatePreview();
 
@@ -315,29 +246,34 @@ async function shareFlex() {
         return;
     }
 
+    // ✅ แก้ไข: เช็ก LIFF พร้อมและ Login แล้วก่อนทุกครั้ง
+    if (!liffReady) {
+        alert("ระบบ LINE กำลังโหลด กรุณารอสักครู่แล้วลองใหม่");
+        return;
+    }
+
+    if (!liff.isLoggedIn()) {
+        // ถ้า Login หลุด → พา Login ใหม่
+        liff.login({ redirectUri: window.location.href });
+        return;
+    }
+
+    const shareBtn = document.querySelector("button[onclick='shareFlex()']");
+    const originalText = shareBtn.innerHTML;
+    shareBtn.innerHTML = "กำลังเปิด Share Target Picker...";
+    shareBtn.disabled = true;
+
     try {
-        // ✅ กรณีที่ 1: เปิดในแอป LINE บนมือถือ → ส่ง Flex Message ได้จริง
-        if (liffReady && liff.isLoggedIn() && liff.isApiAvailable("shareTargetPicker")) {
-            const result = await liff.shareTargetPicker([dynamicFlexJson]);
-            if (result && result.status === 'success') {
-                alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
-            }
-
-        // ✅ กรณีที่ 2: เปิดจาก Mobile Browser (ไม่ใช่แอป LINE) → ดึงเปิดในแอป LINE
-        } else if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-            const liffUrl = "https://liff.line.me/" + myLiffId;
-            if (confirm("กรุณาเปิดหน้านี้ในแอป LINE เพื่อส่ง Flex Message\nกด OK เพื่อเปิดแอป LINE")) {
-                window.location.href = liffUrl;
-            }
-
-        // ✅ กรณีที่ 3: PC Browser → แสดง QR Code ให้แสกนเปิดใน LINE มือถือ
-        } else {
-            showQRModal();
+        const result = await liff.shareTargetPicker([dynamicFlexJson]);
+        if (result && result.status === 'success') {
+            alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
         }
-
     } catch (error) {
         console.error(error);
         alert("เกิดข้อผิดพลาด: " + error.message);
+    } finally {
+        shareBtn.innerHTML = originalText;
+        shareBtn.disabled = false;
     }
 }
 
