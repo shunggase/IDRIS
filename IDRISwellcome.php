@@ -175,7 +175,7 @@ $conn->close();
 
         /* ===== WELCOME BANNER ===== */
         .welcome-banner {
-            background: linear-gradient(135deg, #1a6b3a 0%, #0d8c3e 60%, #00c853 100%);
+            background: linear-gradient(135deg, #1a6b3a 0%, #0d8c3e 60%, #00c853 50%);
             border: 1px solid #00c853;
             border-radius: 10px;
             padding: 18px 24px;
@@ -420,7 +420,7 @@ $conn->close();
 <!-- ===== NAVBAR ===== -->
 <nav class="idris-navbar">
     <div class="brand-logo">
-        <div class="IDRISLOGO.png">&#x1F6E1;</div>
+        <div class="shield-icon">&#x1F6E1;</div>
         <div>
             <div class="brand-title">PROJECT IDRIS &nbsp;-&nbsp; Intelligent Digital Response &amp; Investigation System</div>
             <div class="brand-subtitle">LINE Flex Message Creator &amp; Share</div>
@@ -516,7 +516,6 @@ $conn->close();
                     <div class="chat-timestamp" id="chatTimestamp"></div>
                 </div>
             </div>
-
         </div>
     </div>
 
