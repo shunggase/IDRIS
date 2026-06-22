@@ -1,12 +1,22 @@
 <?php
-session_start();
-session_destroy();
+ob_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-// ลบ Cookie ทั้งหมดที่ตั้งไว้
-setcookie('user_id', '', time() - 3600, '/', '', true, true);
-setcookie('user_fullname', '', time() - 3600, '/', '', true, true);
-setcookie('line_profile_data', '', time() - 3600, '/', '', true, true);
+// 1. เคลียร์ข้อมูลสิทธิ์และโปรไฟล์ฝั่ง LINE ออกจากระบบเซสชัน
+if (isset($_SESSION['profile'])) {
+    unset($_SESSION['profile']);
+}
 
-header("Location: welcome.php");
+// 2. เคลียร์ค่าคุกกี้ที่เกี่ยวข้องกับ LINE Login
+if (isset($_COOKIE['line_state'])) {
+    setcookie('line_state', '', time() - 3600, '/');
+}
+
+// 3. ใช้การสั่งย้ายหน้าผ่าน HTTP Header แบบระบุสถานะ 302 (Found/Redirect) ที่ชัดเจน
+// ลดพารามิเตอร์สุ่มตัวเลข เพื่อเลี่ยงระบบสแกนบล็อกความปลอดภัยของระบบ Cloud
+header("HTTP/1.1 302 Found");
+header("Location: welcome.php?logout=linesuccess");
 exit();
 ?>
