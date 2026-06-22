@@ -473,16 +473,24 @@ $conn->close();
                 <option value="2:1">2:1</option>
             </select>
 
-            <div style="display:flex; gap:10px; margin-top:8px;">
-                <!-- ใส่สไตล์ flex: 1; เพิ่มเข้าไปในปุ่มทุกตัวเพื่อบีบให้ขนาดเท่ากันทั้งหมด -->
+            <div class="json-label">4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</div>
+            <textarea class="json-box" id="FlexCode" readonly
+                      placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
+
+
+            <!-- เพิ่ม align-items: stretch เพื่อบังคับให้ทุกปุ่มยืดความสูงเท่ากับปุ่มที่สูงที่สุดเสมอ -->
+            <div style="display: flex; gap: 10px; margin-top: 8px; align-items: stretch;">
+                
+                <!-- ปุ่ม Preview และปุ่ม Clear ใส่ flex: 1 เพื่อให้แบ่งพื้นที่กันคนละครึ่ง -->
                 <button class="btn-idris-primary" style="flex: 1;" onclick="generatePreview()">Preview Code</button>
                 <button class="btn-idris-danger" style="flex: 1;" onclick="clearFields()">Clear ค่า</button>
                 
-                <!-- ปุ่มไลน์เพิ่มจัดระเบียบไอคอนให้อยู่ตรงกลางร่วมด้วย -->
-                <button class="btn-share-line" id="shareBtnEl" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
+                <!-- ปุ่มแชร์ใส่ flex: 2 เพื่อให้มีความยาวเท่ากับสองปุ่มแรกรวมกันพอดี (สัดส่วน 50:50) -->
+                <button class="btn-share-line" id="shareBtnEl" style="flex: 2; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
                     <span>✨</span> ส่งและแชร์ไปที่ LINE
                 </button>
             </div>
+
         </div>
     </div>
 
@@ -508,11 +516,6 @@ $conn->close();
                     <div class="chat-timestamp" id="chatTimestamp"></div>
                 </div>
             </div>
-
-            <div class="json-label">4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</div>
-            <textarea class="json-box" id="FlexCode" readonly
-                      placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
-
 
         </div>
     </div>
