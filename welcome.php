@@ -29,10 +29,23 @@ $session_fullname = $_SESSION['fullname'];
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
+    <link href="https://jsdelivr.net" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="style2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
-</head>
+    <style>
+        /* บังคับซ่อนลิงก์ขยะหรือปุ่มแปลกปลอมที่หลุดมาจากไฟล์ nav.php ด้านล่างสุด */
+        body > a[href*="linelogin"], 
+        body > button:last-of-type {
+            display: none !important;
+        }
+        /* ล้างสีลิงก์ Navbar ไม่ให้เปลี่ยนเป็นสีน้ำเงิน */
+        .navbar a {
+            text-decoration: none !important;
+        }
+    </style>
+  </head>
 
+<body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <img src="IDRISLOGO.png" class="brand-mark me-2" alt="IDRIS Logo" style="height: 40px; width: auto;">
@@ -62,8 +75,6 @@ $session_fullname = $_SESSION['fullname'];
     </div>
   </div>
 </nav>
-
-<body>
 
     <div class="img"></div>
     <div class="center">
