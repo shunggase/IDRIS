@@ -211,9 +211,6 @@ $conn->close();
             border: 1px solid var(--border-color);
             border-radius: 10px;
             overflow: hidden;
-            height: 100%; /* บังคับให้ยืดเต็มความสูงของแถวตามจุดที่ 1 */
-            display: flex;
-            flex-direction: column;
         }
         .panel-header {
             background: #0d2040;
@@ -226,10 +223,6 @@ $conn->close();
         }
         .panel-body {
             padding: 20px;
-            flex: 1; /* 💡 สั่งให้พื้นที่ตรงนี้กินพื้นที่แนวตั้งที่เหลือทั้งหมด */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* 💡 ดันให้ปุ่มกดสี ๆ ด้านล่าง ลงไปชิดขอบล่างสุดของการ์ดพอดี */
         }
 
         /* ===== FORM ELEMENTS ===== */
