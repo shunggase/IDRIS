@@ -46,7 +46,7 @@ $session_fullname = $_SESSION['fullname'];
   </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(4, 8, 20, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(26, 58, 110, 0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
   <div class="container-fluid">
     <img src="IDRISLOGO.png" class="brand-mark me-2" alt="IDRIS Logo" style="height: 40px; width: auto;">
     <a class="navbar-brand" href="#"><strong>IDRIS</strong></a>
