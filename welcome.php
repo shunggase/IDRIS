@@ -29,7 +29,7 @@ $session_fullname = $_SESSION['fullname'];
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
-    <link href="https://jsdelivr.net" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="style2.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
     <style>
@@ -81,8 +81,10 @@ $session_fullname = $_SESSION['fullname'];
       <div class="title">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</div>
       <div class="sub_title">Let's login to the IDRIS by using line login</div>
       <div class="btns">
-        <button>Learn More</button>
-        <button>Subscribe</button>
+        <button onclick="alert('IDRIS System Ver 2.0')">Learn More</button>
+        <a href="nav.php" class="btn-line-center">
+            <i class="fab fa-line"></i> LINE
+        </a>
       </div>
     </div>
 
