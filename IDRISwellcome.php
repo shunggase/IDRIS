@@ -454,6 +454,31 @@ $conn->close();
 
     <!-- LEFT: Configuration -->
     <div class="panel-card">
+        <div class="panel-header">2. LIVE MONITOR &amp; TRANSMISSION PREVIEW</div>
+        <div class="panel-body">
+            <div class="live-preview-label">Live Preview</div>
+            <div class="chat-mockup">
+                <?php if (isset($profile['pictureUrl']) && !empty($profile['pictureUrl'])): ?>
+                    <img src="<?php echo htmlspecialchars($profile['pictureUrl'], ENT_QUOTES, 'UTF-8'); ?>"
+                         alt="avatar" class="chat-avatar">
+                <?php else: ?>
+                    <div class="chat-avatar-placeholder">&#128100;</div>
+                <?php endif; ?>
+                <div class="chat-bubble-wrap">
+                    <div class="flex-bubble-card">
+                        <div class="no-image-placeholder" id="noImagePlaceholder">ยังไม่มีรูปภาพ</div>
+                        <a id="previewAnchor" href="#" target="_blank" style="display:none;">
+                            <img id="imagePreview" src="" class="flex-hero-img" alt="Preview">
+                        </a>
+                    </div>
+                    <div class="chat-timestamp" id="chatTimestamp"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Live Monitor -->
+    <div class="panel-card">
         <div class="panel-header">1. CONFIGURATION COMMAND INTERFACE</div>
         <div class="panel-body">
             <div id="liffBanner" class="liff-banner"></div>
@@ -492,31 +517,6 @@ $conn->close();
                 </button>
             </div>
 
-        </div>
-    </div>
-
-    <!-- RIGHT: Live Monitor -->
-    <div class="panel-card">
-        <div class="panel-header">2. LIVE MONITOR &amp; TRANSMISSION PREVIEW</div>
-        <div class="panel-body">
-            <div class="live-preview-label">Live Preview</div>
-            <div class="chat-mockup">
-                <?php if (isset($profile['pictureUrl']) && !empty($profile['pictureUrl'])): ?>
-                    <img src="<?php echo htmlspecialchars($profile['pictureUrl'], ENT_QUOTES, 'UTF-8'); ?>"
-                         alt="avatar" class="chat-avatar">
-                <?php else: ?>
-                    <div class="chat-avatar-placeholder">&#128100;</div>
-                <?php endif; ?>
-                <div class="chat-bubble-wrap">
-                    <div class="flex-bubble-card">
-                        <div class="no-image-placeholder" id="noImagePlaceholder">ยังไม่มีรูปภาพ</div>
-                        <a id="previewAnchor" href="#" target="_blank" style="display:none;">
-                            <img id="imagePreview" src="" class="flex-hero-img" alt="Preview">
-                        </a>
-                    </div>
-                    <div class="chat-timestamp" id="chatTimestamp"></div>
-                </div>
-            </div>
         </div>
     </div>
 
