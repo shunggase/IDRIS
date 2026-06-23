@@ -23,13 +23,14 @@ $session_fullname = $_SESSION['fullname'];
 
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
 </head>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -64,14 +65,14 @@ $session_fullname = $_SESSION['fullname'];
 
 <body>
 
-    <div class="container">
-        <h1 class="mt-5">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</h1>
-        <hr>
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        </p>
-        <hr>
-        <a href="logout.php" class="btn btn-danger">LineLogout</a>
+    <div class="img"></div>
+    <div class="center">
+      <div class="title">Create Amazing Website</div>
+      <div class="sub_title">Pure HTML & CSS Only</div>
+      <div class="btns">
+        <button>Learn More</button>
+        <button>Subscribe</button>
+      </div>
     </div>
 
     <?php require_once('nav.php'); ?>
