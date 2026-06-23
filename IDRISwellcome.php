@@ -509,11 +509,9 @@ $conn->close();
                 <option value="2:1">2:1</option>
             </select>
                 
-                <!-- 💡 กล่องสีดำ (TextArea) ใส่ flex: 1 เพื่อให้มันยืดความสูงยาวลงมาเติมเต็มกล่องขวาให้สวยงาม -->
-                <div style="flex: 1; display: flex; flex-direction: column; margin-bottom: 15px;">
-                    <label>4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</label>
-                    <textarea id="previewTextArea" style="flex: 1; min-height: 150px; background: #0b1426; color: #fff; border: 1px solid #1a3a6e; border-radius: 4px; padding: 10px; resize: none;"></textarea>
-                </div>
+            <div class="json-label">4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</div>
+            <textarea class="json-box" id="FlexCode" readonly
+                      placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
 
                 <!-- เพิ่ม align-items: stretch เพื่อบังคับให้ทุกปุ่มยืดความสูงเท่ากับปุ่มที่สูงที่สุดเสมอ -->
             <div style="display: flex; gap: 10px; margin-top: 8px; align-items: stretch;">
