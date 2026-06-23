@@ -487,9 +487,9 @@ $conn->close();
     <div style="flex: 1;">
         
         <!-- กล่องเบอร์ 1 (CONFIGURATION) สามารถกำหนดความสูงให้ยาวแซงฝั่งซ้ายได้ตามต้องการ -->
-        <div class="panel-card" style="display: flex; flex-direction: column; min-height: 520px; height: 100%;">
+        <div class="panel-card" style="display: flex; flex-direction: column; height: 100%;">
             <div class="panel-header">1. CONFIGURATION COMMAND INTERFACE</div>
-            <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
                 
                 <div id="liffBanner" class="liff-banner"></div>
 
@@ -508,7 +508,8 @@ $conn->close();
                 <option value="20:13">20:13</option>
                 <option value="2:1">2:1</option>
             </select>
-                
+
+            <div style="flex: 1; display: flex; flex-direction: column; margin-bottom: 15px; margin-top: 15px;">    
             <div class="json-label">4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</div>
             <textarea class="json-box" id="FlexCode" readonly
                       placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
@@ -524,6 +525,7 @@ $conn->close();
                 <button class="btn-share-line" id="shareBtnEl" style="flex: 2; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
                     <span>✨</span> ส่งและแชร์ไปที่ LINE
                 </button>
+                <div style="display: flex; gap: 10px; align-items: stretch;">
 
             </div>
         </div>
