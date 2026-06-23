@@ -439,8 +439,8 @@ $conn->close();
 
 <!-- ===== NAVBAR ===== -->
 <nav class="idris-navbar">
-    <div class="brand-logo">
-        <div class="shield-icon">&#x1F6E1;</div>
+    <div class="brand-logo" style="display: flex; align-items: center; gap: 12px;">
+        <img src="IDRISLOGO2.png" alt="IDRIS Logo" style="width: 38px; height: 38px; object-fit: cover; border-radius: 6px; flex-shrink: 0;">
         <div>
             <div class="brand-title">PROJECT IDRIS &nbsp;-&nbsp; Intelligent Digital Response &amp; Investigation System</div>
             <div class="brand-subtitle">LINE Flex Message Creator &amp; Share</div>
