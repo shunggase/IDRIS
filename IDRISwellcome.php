@@ -517,13 +517,15 @@ $conn->close();
                 <!-- เพิ่ม align-items: stretch เพื่อบังคับให้ทุกปุ่มยืดความสูงเท่ากับปุ่มที่สูงที่สุดเสมอ -->
             <div style="display: flex; gap: 10px; margin-top: 8px; align-items: stretch;">
                 
-                <div style="display: flex; gap: 10px; margin-top: 8px; align-items: stretch;">
-                    <button class="btn-idris-primary" style="flex: 1;" onclick="generatePreview()">Preview Code</button>
-                    <button class="btn-idris-danger" style="flex: 1;" onclick="clearFields()">Clear ค่า</button>
-                    <button class="btn-share-line" id="shareBtnEl" style="flex: 2; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
-                        <span>✨</span> ส่งและแชร์ไปที่ LINE
-                    </button>
-                </div>
+                <!-- ปุ่ม Preview และปุ่ม Clear ใส่ flex: 1 เพื่อให้แบ่งพื้นที่กันคนละครึ่ง -->
+                <button class="btn-idris-primary" style="flex: 1; height: 42px;" onclick="generatePreview()">Preview Code</button>
+                <button class="btn-idris-danger" style="flex: 1; height: 42px;" onclick="clearFields()">Clear ค่า</button>
+                
+                <!-- ปุ่มแชร์ใส่ flex: 2 เพื่อให้มีความยาวเท่ากับสองปุ่มแรกรวมกันพอดี (สัดส่วน 50:50) -->
+                <button class="btn-share-line" id="shareBtnEl" style="flex: 2; height: 42px; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
+                    <span>✨</span> ส่งและแชร์ไปที่ LINE
+                </button>
+                <div style="display: flex; gap: 10px; align-items: stretch;">
 
             </div>
         </div>
