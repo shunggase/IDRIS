@@ -217,10 +217,13 @@ $conn->close();
 
         /* ===== PANEL CARDS ===== */
         .panel-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            overflow: hidden;
+            background: rgba(11, 20, 38, 0.75);           
+            border: 1px solid rgba(26, 58, 110, 0.4);            
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* รองรับการทำงานบนเบราว์เซอร์ Safari / iOS */
         }
         .panel-header {
             background: #0d2040;
