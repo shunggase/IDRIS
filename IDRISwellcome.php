@@ -304,7 +304,8 @@ $conn->close();
             margin-bottom: 10px;
         }
         .chat-mockup {
-            background: var(--chat-bg);
+            background: rgba(11, 20, 38, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             padding: 14px;
             min-height: 420px;
@@ -312,6 +313,9 @@ $conn->close();
             align-items: flex-start;
             gap: 10px;
             margin-bottom: 16px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-sizing: border-box;
         }
         .chat-avatar {
             width: 46px;
