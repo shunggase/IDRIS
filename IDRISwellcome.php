@@ -511,7 +511,7 @@ $conn->close();
 
             <div style="flex: 1; display: flex; flex-direction: column; margin-bottom: 15px; margin-top: 15px;">    
             <div class="json-label">4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</div>
-            <textarea class="json-box" id="FlexCode" readonly
+            <textarea class="json-box" id="FlexCode" readonly style="flex: 1; resize: none;"
                       placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
 
                 <!-- เพิ่ม align-items: stretch เพื่อบังคับให้ทุกปุ่มยืดความสูงเท่ากับปุ่มที่สูงที่สุดเสมอ -->
