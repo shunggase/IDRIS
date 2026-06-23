@@ -442,12 +442,6 @@ $conn->close();
     </div>
 </nav>
 
-<!-- ===== WELCOME BANNER ===== -->
-<div class="welcome-banner">
-    <h2>&#x2705; Welcome, <?php echo htmlspecialchars($_SESSION['fullname'], ENT_QUOTES, 'UTF-8'); ?> to IDRIS</h2>
-    <p>Authenticated System Email: <?php echo htmlspecialchars($db_email, ENT_QUOTES, 'UTF-8'); ?></p>
-    <p>LINE Name: <?php echo htmlspecialchars($profile['displayName'] ?? '-', ENT_QUOTES, 'UTF-8'); ?> &nbsp;|&nbsp; UID: <?php echo htmlspecialchars($profile['userId'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></p>
-</div>
 
 <!-- Container หลักควบคุมหน้าเพจ (ใช้ display: flex แบ่งครึ่งหน้าจอซ้าย-ขวาอย่างอิสระ) -->
 <div style="display: flex; gap: 20px; padding: 20px; align-items: flex-start;">
@@ -455,11 +449,12 @@ $conn->close();
     <!-- 👈 [ฝั่งซ้าย] มัดรวมกล่องสีเขียว และ กล่องเบอร์ 2 ไว้ด้วยกันในแนวตั้ง -->
     <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
         
-        <!-- กล่องสีเขียว (Welcome) จะถูกจำกัดให้อยู่แค่ครึ่งซ้ายของหน้าเพจ -->
-        <div class="welcome-banner" style="margin: 0; width: 100%; box-sizing: border-box;">
-            <h3>✅ Welcome, bank to IDRIS</h3>
-            <p>Authenticated System Email: shunggase@gmail.com</p>
-            <p>LINE Name: 13 A N K | UID: Ucffff6d1e7329681b708367503dbfa782</p>
+        
+        <!-- ===== WELCOME BANNER ===== -->
+        <div class="welcome-banner">
+            <h2>&#x2705; Welcome, <?php echo htmlspecialchars($_SESSION['fullname'], ENT_QUOTES, 'UTF-8'); ?> to IDRIS</h2>
+            <p>Authenticated System Email: <?php echo htmlspecialchars($db_email, ENT_QUOTES, 'UTF-8'); ?></p>
+            <p>LINE Name: <?php echo htmlspecialchars($profile['displayName'] ?? '-', ENT_QUOTES, 'UTF-8'); ?> &nbsp;|&nbsp; UID: <?php echo htmlspecialchars($profile['userId'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></p>
         </div>
 
         <!-- กล่องเบอร์ 2 (LIVE MONITOR) อยู่ถัดลงมาด้านล่างฝั่งซ้าย -->
