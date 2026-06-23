@@ -715,7 +715,7 @@ $conn->close();
         } catch (e) {
             console.warn("LIFF logout skipped:", e.message);
         }
-        window.location.href = "logout.php";
+        window.location.href = "LineLogout.php";
     }
 </script>
 </body>
