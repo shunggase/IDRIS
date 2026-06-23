@@ -46,13 +46,13 @@ $session_fullname = $_SESSION['fullname'];
   </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(4, 8, 20, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
   <div class="container-fluid">
     <img src="IDRISLOGO.png" class="brand-mark me-2" alt="IDRIS Logo" style="height: 40px; width: auto;">
     <a class="navbar-brand" href="#"><strong>IDRIS</strong></a>
-    <div class="text-white d-flex flex-column">          
+    <div class="text-white d-flex flex-column">
+      <span class="brand-title fw-bold">Intelligent Digital Response & Investigation System</span>          
       <span class="brand-subtitle text-white-50 small">LINE Flex Image Preview</span>
-      <span class="brand-title fw-bold">Intelligent Digital Response & Investigation System</span>
     </div>
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,11 +80,16 @@ $session_fullname = $_SESSION['fullname'];
     <div class="center">
       <div class="title">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</div>
       <div class="sub_title">Let's login to the IDRIS by using line login</div>
-      <div class="btns">
-        <?php require_once('nav.php'); ?>
+      <div class="btns" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; width: 100%;">
+        <a href="nav.php" class="btn-line-center" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; background: #06C755; color: #fff; border: 2px solid #06C755; width: 150px; height: 55px; border-radius: 5px; font-size: 20px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
+            <i class="fab fa-line" style="font-size: 24px;"></i> LINE
+        </a>
       </div>
     </div>
-
+    <div style="display: none;">
+        <?php require_once('nav.php'); ?>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 </body>
