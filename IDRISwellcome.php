@@ -185,12 +185,14 @@ $conn->close();
 
         /* ===== WELCOME BANNER ===== */
         .welcome-banner {
-            background: linear-gradient(135deg, #1a6b3a 0%, #0d8c3e 60%, #00c853 100%);
-            border: 1px solid #00c853;
+            background: linear-gradient(135deg, rgba(26, 107, 58, 0.7) 0%, rgba(13, 140, 62, 0.7) 60%, rgba(0, 200, 83, 0.7) 100%);          
+            border: 1px solid rgba(0, 200, 83, 0.5);            
             border-radius: 10px;
             padding: 18px 24px;
             margin: 20px 20px 0;
             width: calc(49% - 10px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         .welcome-banner h2 {
             font-size: 22px;
@@ -217,7 +219,7 @@ $conn->close();
 
         /* ===== PANEL CARDS ===== */
         .panel-card {
-            background: rgba(11, 20, 38, 0.75);           
+            background: rgba(11, 20, 38, 0.65);           
             border: 1px solid rgba(26, 58, 110, 0.4);            
             border-radius: 8px;
             margin-bottom: 20px;
