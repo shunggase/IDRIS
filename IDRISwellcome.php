@@ -72,11 +72,21 @@ $conn->close();
         * { box-sizing: border-box; }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            
+            /* 💡 ส่วนที่เพิ่มเข้ามาใหม่สำหรับรูปพื้นหลัง bg2.png */
+            background-image: url('bg2.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-color: #0b111e; /* สีสำรองระหว่างรอรูปโหลด */
             min-height: 100vh;
         }
+
 
         /* ===== NAVBAR ===== */
         .idris-navbar {
