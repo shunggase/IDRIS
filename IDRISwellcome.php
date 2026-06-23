@@ -304,7 +304,7 @@ $conn->close();
             margin-bottom: 10px;
         }
         .chat-mockup {
-            background: rgba(11, 20, 38, 0.3);
+            background: rgba(11, 20, 38, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             padding: 14px;
