@@ -449,14 +449,24 @@ $conn->close();
     <p>LINE Name: <?php echo htmlspecialchars($profile['displayName'] ?? '-', ENT_QUOTES, 'UTF-8'); ?> &nbsp;|&nbsp; UID: <?php echo htmlspecialchars($profile['userId'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></p>
 </div>
 
-<!-- ===== MAIN GRID ===== -->
-<div class="main-grid">
+<!-- Container หลักควบคุมหน้าเพจ (ใช้ display: flex แบ่งครึ่งหน้าจอซ้าย-ขวาอย่างอิสระ) -->
+<div style="display: flex; gap: 20px; padding: 20px; align-items: flex-start;">
 
-    <!-- LEFT: Configuration -->
-    <div class="panel-card">
-        <div class="panel-header">2. LIVE MONITOR &amp; TRANSMISSION PREVIEW</div>
-        <div class="panel-body">
-            <div class="live-preview-label">Live Preview</div>
+    <!-- 👈 [ฝั่งซ้าย] มัดรวมกล่องสีเขียว และ กล่องเบอร์ 2 ไว้ด้วยกันในแนวตั้ง -->
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- กล่องสีเขียว (Welcome) จะถูกจำกัดให้อยู่แค่ครึ่งซ้ายของหน้าเพจ -->
+        <div class="welcome-banner" style="margin: 0; width: 100%; box-sizing: border-box;">
+            <h3>✅ Welcome, bank to IDRIS</h3>
+            <p>Authenticated System Email: shunggase@gmail.com</p>
+            <p>LINE Name: 13 A N K | UID: Ucffff6d1e7329681b708367503dbfa782</p>
+        </div>
+
+        <!-- กล่องเบอร์ 2 (LIVE MONITOR) อยู่ถัดลงมาด้านล่างฝั่งซ้าย -->
+        <div class="panel-card">
+            <div class="panel-header">2. LIVE MONITOR &amp; TRANSMISSION PREVIEW</div>
+            <div class="panel-body">
+                <div class="live-preview-label">Live Preview</div>
             <div class="chat-mockup">
                 <?php if (isset($profile['pictureUrl']) && !empty($profile['pictureUrl'])): ?>
                     <img src="<?php echo htmlspecialchars($profile['pictureUrl'], ENT_QUOTES, 'UTF-8'); ?>"
@@ -474,14 +484,20 @@ $conn->close();
                     <div class="chat-timestamp" id="chatTimestamp"></div>
                 </div>
             </div>
+            </div>
         </div>
+        
     </div>
 
-    <!-- RIGHT: Live Monitor -->
-    <div class="panel-card">
-        <div class="panel-header">1. CONFIGURATION COMMAND INTERFACE</div>
-        <div class="panel-body">
-            <div id="liffBanner" class="liff-banner"></div>
+    <!-- 👉 [ฝั่งขวา] แยกกล่องเบอร์ 1 ออกมาเดี่ยวๆ ขอบบนจะขยับไปเท่ากล่องสีเขียวทันที -->
+    <div style="flex: 1;">
+        
+        <!-- กล่องเบอร์ 1 (CONFIGURATION) สามารถกำหนดความสูงให้ยาวแซงฝั่งซ้ายได้ตามต้องการ -->
+        <div class="panel-card" style="display: flex; flex-direction: column; min-height: 520px; height: 100%;">
+            <div class="panel-header">1. CONFIGURATION COMMAND INTERFACE</div>
+            <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                
+                <div id="liffBanner" class="liff-banner"></div>
 
             <label class="form-label-idris">Image URL</label>
             <input type="url" class="input-idris" id="imageUrl" placeholder="https://example.com/image.jpg">
@@ -498,13 +514,14 @@ $conn->close();
                 <option value="20:13">20:13</option>
                 <option value="2:1">2:1</option>
             </select>
+                
+                <!-- 💡 กล่องสีดำ (TextArea) ใส่ flex: 1 เพื่อให้มันยืดความสูงยาวลงมาเติมเต็มกล่องขวาให้สวยงาม -->
+                <div style="flex: 1; display: flex; flex-direction: column; margin-bottom: 15px;">
+                    <label>4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</label>
+                    <textarea id="previewTextArea" style="flex: 1; min-height: 150px; background: #0b1426; color: #fff; border: 1px solid #1a3a6e; border-radius: 4px; padding: 10px; resize: none;"></textarea>
+                </div>
 
-            <div class="json-label">4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</div>
-            <textarea class="json-box" id="FlexCode" readonly
-                      placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
-
-
-            <!-- เพิ่ม align-items: stretch เพื่อบังคับให้ทุกปุ่มยืดความสูงเท่ากับปุ่มที่สูงที่สุดเสมอ -->
+                <!-- เพิ่ม align-items: stretch เพื่อบังคับให้ทุกปุ่มยืดความสูงเท่ากับปุ่มที่สูงที่สุดเสมอ -->
             <div style="display: flex; gap: 10px; margin-top: 8px; align-items: stretch;">
                 
                 <!-- ปุ่ม Preview และปุ่ม Clear ใส่ flex: 1 เพื่อให้แบ่งพื้นที่กันคนละครึ่ง -->
@@ -515,12 +532,14 @@ $conn->close();
                 <button class="btn-share-line" id="shareBtnEl" style="flex: 2; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
                     <span>✨</span> ส่งและแชร์ไปที่ LINE
                 </button>
-            </div>
 
+            </div>
         </div>
+
     </div>
 
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
