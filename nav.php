@@ -13,7 +13,7 @@ require_once('LineLogin.php');
                     $line = new LineLogin();
                     $link = $line->getLink();
             ?> 
-            <a href="<?php echo $link; ?>" class="btn btn-success me-2">Line Login</a>
+            <a href="<?php echo $link; ?>" class="btn btn-success me-2"style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; width: 100%;">Line Login</a>
             <?php } else { ?>
             <!-- 💡 เปลี่ยนชื่อลิงก์ปลายทางให้สะกดเป็นตัวพิมพ์เล็กทั้งหมดตามมาตรฐานเว็บจริงบน Vercel -->
             <a href="linelogout.php" class="btn btn-danger">Line Logout</a> 
