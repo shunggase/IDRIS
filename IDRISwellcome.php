@@ -299,16 +299,16 @@ $conn->close();
             margin-bottom: 16px;
         }
         .chat-avatar {
-            width: 36px;
-            height: 36px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             background: #1a3a6e;
             flex-shrink: 0;
             object-fit: cover;
         }
         .chat-avatar-placeholder {
-            width: 36px;
-            height: 36px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             background: #1a3a6e;
             flex-shrink: 0;
@@ -339,7 +339,7 @@ $conn->close();
         }
         .no-image-placeholder {
             width: 100%;
-            height: 140px;
+            height: 240px;
             background: #2a3f5a;
             display: flex;
             align-items: center;
