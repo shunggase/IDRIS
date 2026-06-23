@@ -80,13 +80,9 @@ $session_fullname = $_SESSION['fullname'];
     <div class="center">
       <div class="title">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</div>
       <div class="sub_title">Let's login to the IDRIS by using line login</div>
-      <div class="btns" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; width: 100%;">
-        <a <?php require_once('nav.php'); ?> class="btn-line-center" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; background: #06C755; color: #fff; border: 2px solid #06C755; width: 150px; height: 55px; border-radius: 5px; font-size: 20px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
-            <i class="fab fa-line" style="font-size: 24px;"></i> LINE
-        </a>
-      </div>
+      <div class="btns" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; width: 100%;"></div>
     </div>
-    <div style="display: none;">
+    <div style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; background: #06C755; color: #fff; border: 2px solid #06C755; width: 150px; height: 55px; border-radius: 5px; font-size: 20px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
         <?php require_once('nav.php'); ?>
     </div>
     
