@@ -67,8 +67,8 @@ $session_fullname = $_SESSION['fullname'];
 
     <div class="img"></div>
     <div class="center">
-      <div class="title">Create Amazing Website</div>
-      <div class="sub_title">Pure HTML & CSS Only</div>
+      <div class="title">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</div>
+      <div class="sub_title">Let's login to the IDRIS by using line login</div>
       <div class="btns">
         <button>Learn More</button>
         <button>Subscribe</button>
@@ -76,13 +76,6 @@ $session_fullname = $_SESSION['fullname'];
     </div>
 
     <?php require_once('nav.php'); ?>
-
-    <main class="container">
-        <div class="bg-light p-5 rounded mt-3">
-            <h1 class="mt-2">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</h1>
-            <p class="lead">Let's login to the IDRIS by using line login</p>
-        </div>
-    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
