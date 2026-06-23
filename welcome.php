@@ -81,12 +81,9 @@ $session_fullname = $_SESSION['fullname'];
       <div class="title">Welcome <?php echo htmlspecialchars($session_fullname, ENT_QUOTES, 'UTF-8'); ?> To IDRIS</div>
       <div class="sub_title">Let's login to the IDRIS by using line login</div>
       <div class="btns">
-        <button onclick="alert('IDRIS System Ver 2.0')">Learn More</button>
         <?php require_once('nav.php'); ?>
       </div>
     </div>
-
-    <?php require_once('nav.php'); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
