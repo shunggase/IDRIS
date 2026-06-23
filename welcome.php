@@ -82,9 +82,7 @@ $session_fullname = $_SESSION['fullname'];
       <div class="sub_title">Let's login to the IDRIS by using line login</div>
       <div class="btns">
         <button onclick="alert('IDRIS System Ver 2.0')">Learn More</button>
-        <a href="nav.php" class="btn-line-center">
-            <i class="fab fa-line"></i> LINE
-        </a>
+        <?php require_once('nav.php'); ?>
       </div>
     </div>
 
