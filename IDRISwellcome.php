@@ -486,34 +486,49 @@ $conn->close();
     <!-- 👉 [ฝั่งขวา] แยกกล่องเบอร์ 1 ออกมาเดี่ยวๆ ขอบบนจะขยับไปเท่ากล่องสีเขียวทันที -->
     <div style="flex: 1;">
         
-        <!-- ตัวอย่างโค้ดฝั่งขวา (กล่องหมายเลข 1) ที่ปรับปรุงแล้ว -->
-<div class="panel-card" style="display: flex; flex-direction: column; height: 100%;">
-    <div class="panel-header">1. CONFIGURATION COMMAND INTERFACE</div>
-    
-    <!-- เติม flex: 1 ที่ panel-body เพื่อให้กินพื้นที่เต็มความสูงการ์ด -->
-    <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
-        
-        <!-- 📦 ช่องกรอกข้อมูลด้านบนของคุณ (Image URL, Target Link, Aspect Ratio) -->
-        <div>
-            <!-- โค้ดช่องกรอกต่าง ๆ ของคุณ... -->
-        </div>
-        
-        <!-- 💡 ส่วนที่ต้องการให้ขยายลงมา: ใส่ flex: 1 และ display: flex ครอบไว้ -->
-        <div style="flex: 1; display: flex; flex-direction: column; margin-bottom: 15px; margin-top: 15px;">
-            <label>4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</label>
-            
-            <!-- ⚠️ สำคัญมาก: ใส่ style="flex: 1; resize: none;" และไม่ต้องใส่คำสั่ง height คงที่แล้ว -->
-            <textarea id="previewTextArea" style="flex: 1; background: #0b1426; color: #fff; border: 1px solid #1a3a6e; border-radius: 4px; padding: 10px; resize: none;"></textarea>
-        </div>
+        <!-- กล่องเบอร์ 1 (CONFIGURATION) สามารถกำหนดความสูงให้ยาวแซงฝั่งซ้ายได้ตามต้องการ -->
+        <div class="panel-card" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="panel-header">1. CONFIGURATION COMMAND INTERFACE</div>
+            <div class="panel-body" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px;">
+                
+                <div id="liffBanner" class="liff-banner"></div>
 
-        <!-- 🔘 กลุ่มปุ่มกด 3 ปุ่มด้านล่างของคุณ (จะขยับลงไปชิดขอบล่างที่ยืดออกโดยอัตโนมัติ) -->
-        <div style="display: flex; gap: 10px; align-items: stretch;">
-            <!-- โค้ดปุ่มกด 3 ปุ่มของคุณ... -->
+            <label class="form-label-idris">Image URL</label>
+            <input type="url" class="input-idris" id="imageUrl" placeholder="https://example.com/image.jpg">
+
+            <label class="form-label-idris">Target Link</label>
+            <input type="url" class="input-idris" id="targetUrl" placeholder="https://example.com">
+
+            <label class="form-label-idris">Aspect Ratio</label>
+            <select class="input-idris" id="aspectRatio">
+                <option value="30:25">30:25</option>
+                <option value="1:1">1:1</option>
+                <option value="4:3">4:3</option>
+                <option value="16:9">16:9</option>
+                <option value="20:13">20:13</option>
+                <option value="2:1">2:1</option>
+            </select>
+
+            <div style="flex: 1; display: flex; flex-direction: column; margin-bottom: 15px; margin-top: 15px;">    
+            <div class="json-label">4. กล่อง Preview (โค้ด JSON ที่พร้อมส่ง)</div>
+            <textarea class="json-box" id="FlexCode" readonly
+                      placeholder="กดปุ่ม Preview Code เพื่อสร้างข้อความ..."></textarea>
+
+                <!-- เพิ่ม align-items: stretch เพื่อบังคับให้ทุกปุ่มยืดความสูงเท่ากับปุ่มที่สูงที่สุดเสมอ -->
+            <div style="display: flex; gap: 10px; margin-top: 8px; align-items: stretch;">
+                
+                <!-- ปุ่ม Preview และปุ่ม Clear ใส่ flex: 1 เพื่อให้แบ่งพื้นที่กันคนละครึ่ง -->
+                <button class="btn-idris-primary" style="flex: 1;" onclick="generatePreview()">Preview Code</button>
+                <button class="btn-idris-danger" style="flex: 1;" onclick="clearFields()">Clear ค่า</button>
+                
+                <!-- ปุ่มแชร์ใส่ flex: 2 เพื่อให้มีความยาวเท่ากับสองปุ่มแรกรวมกันพอดี (สัดส่วน 50:50) -->
+                <button class="btn-share-line" id="shareBtnEl" style="flex: 2; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="shareFlex()">
+                    <span>✨</span> ส่งและแชร์ไปที่ LINE
+                </button>
+                <div style="display: flex; gap: 10px; align-items: stretch;">
+
+            </div>
         </div>
-
-    </div>
-</div>
-
 
     </div>
 
