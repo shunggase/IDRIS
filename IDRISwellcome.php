@@ -180,7 +180,7 @@ $conn->close();
             border-radius: 10px;
             padding: 18px 24px;
             margin: 20px 20px 0;
-            width: calc(45% - 10px);
+            width: calc(48% - 10px);
         }
         .welcome-banner h2 {
             font-size: 22px;
