@@ -562,55 +562,60 @@ $conn->close();
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const myLiffId = "2010383431-NwcATXJE";
-    let liffReady = false;
-    let dynamicFlexJson = null;
+const myLiffId = "2010383431-NwcATXJE";
+let liffReady = false;
+let dynamicFlexJson = null;
 
-    // แสดงเวลาปัจจุบัน
-    function updateTimestamp() {
-        const now = new Date();
-        const h = now.getHours().toString().padStart(2,'0');
-        const m = now.getMinutes().toString().padStart(2,'0');
-        document.getElementById('chatTimestamp').textContent = h + ':' + m + ' ' + (now.getHours() >= 12 ? 'PM' : 'AM');
+// แสดงเวลาปัจจุบัน
+function updateTimestamp() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2,'0');
+    const m = now.getMinutes().toString().padStart(2,'0');
+    const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+    const timestampEl = document.getElementById('chatTimestamp');
+    if (timestampEl) {
+        timestampEl.textContent = h + ':' + m + ' ' + ampm;
     }
+}
 
-    document.addEventListener("DOMContentLoaded", function () {
-        updateTimestamp();
+// ⚠️ มัดรวมคำสั่งควบคุมปุ่มทั้งหมดให้ทำงานหลังจากบราวเซอร์สร้างหน้าเว็บเสร็จสมบูรณ์
+document.addEventListener("DOMContentLoaded", function () {
+    updateTimestamp();
 
-        const checkLiffInterval = setInterval(() => {
-            if (typeof liff !== "undefined") {
-                clearInterval(checkLiffInterval);
-                liff.init({ liffId: myLiffId })
-                    .then(() => {
-                        liffReady = true;
-                        const alreadyRedirected = sessionStorage.getItem('liff_login_attempted');
-                        if (!liff.isLoggedIn()) {
-                            if (!alreadyRedirected) {
-                                sessionStorage.setItem('liff_login_attempted', '1');
-                                liff.login({ redirectUri: window.location.href });
-                            } else {
-                                showLiffBanner();
-                            }
-                        } else {
-                            sessionStorage.removeItem('liff_login_attempted');
-                        }
-                    })
-                    .catch(err => {
-                        console.error("LIFF init failed:", err);
+    // 1. ระบบเชื่อมต่อ LINE LIFF
+    const checkLiffInterval = setInterval(() => {
+        if (typeof liff !== "undefined") {
+            clearInterval(checkLiffInterval);
+            liff.init({ liffId: myLiffId })
+            .then(() => {
+                liffReady = true;
+                const alreadyRedirected = sessionStorage.getItem('liff_login_attempted');
+                if (!liff.isLoggedIn()) {
+                    if (!alreadyRedirected) {
+                        sessionStorage.setItem('liff_login_attempted', '1');
+                        liff.login({ redirectUri: window.location.href });
+                    } else {
                         showLiffBanner();
-                    });
-            }
-        }, 300);
-        setTimeout(() => clearInterval(checkLiffInterval), 10000);
-    });
+                    }
+                } else {
+                    sessionStorage.removeItem('liff_login_attempted');
+                }
+            })
+            .catch(err => {
+                console.error("LIFF init failed:", err);
+                showLiffBanner();
+            });
+        }
+    }, 300);
+    setTimeout(() => clearInterval(checkLiffInterval), 10000);
 
-    // ================= ระบบอัปโหลดรูปภาพอัตโนมัติ (แก้ไขสมบูรณ์) =================
+    // ================= [ย้ายตำแหน่งเข้าล็อกเรียบร้อย] ระบบอัปโหลดรูปภาพอัตโนมัติ =================
     const imageInput = document.getElementById('myImageInput');
     const imageUrlInput = document.getElementById('imageUrl');
     const uploadSpinner = document.getElementById('uploadSpinner');
     const IMGBB_API_KEY = '6e49812a4714b569b957e25e15e813c2';
 
-   if (imageInput) {
+    if (imageInput) {
         imageInput.addEventListener('change', function(event) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
@@ -626,14 +631,13 @@ $conn->close();
             formData.append('image', file);
 
             // ส่งรูปภาพไปที่เว็บฝากรูปผ่าน API ของคุณ
-            fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            fetch(`https://imgbb.com{IMGBB_API_KEY}`, {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(result => {
                 if (uploadSpinner) uploadSpinner.style.display = 'none';
-
                 if (result.success) {
                     const directImageUrl = result.data.url;
                     if (imageUrlInput) {
@@ -730,68 +734,66 @@ function clearFields() {
 }
 
 // ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE ของผู้ใช้งาน
-    async function shareFlex() {
-        generatePreview();
-        if (!dynamicFlexJson) {
-            alert("กรุณาสร้างข้อความพรีวิวก่อนกดแชร์ครับ");
-            return;
+async function shareFlex() {
+    generatePreview();
+    if (!dynamicFlexJson) {
+        alert("กรุณาสร้างข้อความพรีวิวก่อนกดแชร์ครับ");
+        return;
+    }
+    if (!liffReady) {
+        alert("ระบบ LINE กำลังโหลด กรุณารอสักครู่แล้วลองใหม่");
+        return;
+    }
+    if (!liff.isLoggedIn()) {
+        showLiffBanner();
+        return;
+    }
+    const btn = document.getElementById("shareBtnEl");
+    btn.innerHTML = "&#x23F3; กำลังเปิด Share Target Picker...";
+    btn.disabled = true;
+    try {
+        const result = await liff.shareTargetPicker([dynamicFlexJson]);
+        if (result && result.status === 'success') {
+            alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
         }
-        if (!liffReady) {
-            alert("ระบบ LINE กำลังโหลด กรุณารอสักครู่แล้วลองใหม่");
-            return;
-        }
-        if (!liff.isLoggedIn()) {
+    } catch (error) {
+        console.error(error);
+        if (error.code === 'FORBIDDEN' || error.message.includes('not supported')) {
             showLiffBanner();
-            return;
+        } else {
+            alert("เกิดข้อผิดพลาด: " + error.message);
         }
+    } finally {
+        btn.innerHTML = "<span>&#10024;</span> ส่งและแชร์ไปที่ LINE";
+        btn.disabled = false;
+    }
+}
 
-        const btn = document.getElementById("shareBtnEl");
-        btn.innerHTML = "&#x23F3; กำลังเปิด Share Target Picker...";
-        btn.disabled = true;
+function showLiffBanner() {
+    const liffUrl = "https://line.me" + myLiffId;
+    const banner = document.getElementById('liffBanner');
+    banner.style.display = 'block';
+    banner.innerHTML = `
+    <strong style="color:#00e676;">⚠️ แชร์ผ่าน PC ต้องเข้าผ่านลิงก์ LIFF</strong><br>
+    <span style="color:#a0c4e0;">กรุณาเปิดลิงก์นี้เพื่อยืนยันตัวตนกับ LINE:</span><br>
+    <a href="${liffUrl}" target="_blank"
+    style="display:inline-block; margin-top:8px; padding:7px 16px; background:#00c853;
+    color:#fff; border-radius:6px; text-decoration:none; font-size:13px;">
+    เปิดหน้านี้ผ่าน LINE (LIFF)
+    </a>
+    `;
+}
 
-        try {
-            const result = await liff.shareTargetPicker([dynamicFlexJson]);
-            if (result && result.status === 'success') {
-                alert("แชร์ Flex Message สำเร็จเรียบร้อยแล้ว!");
-            }
-        } catch (error) {
-            console.error(error);
-            if (error.code === 'FORBIDDEN' || error.message.includes('not supported')) {
-                showLiffBanner();
-            } else {
-                alert("เกิดข้อผิดพลาด: " + error.message);
-            }
-        } finally {
-            btn.innerHTML = "<span>&#10024;</span> ส่งและแชร์ไปที่ LINE";
-            btn.disabled = false;
+function handleLogout() {
+    try {
+        if (typeof liff !== "undefined" && liff.isInitialized && liff.isLoggedIn()) {
+            liff.logout();
         }
+    } catch (e) {
+        console.warn("LIFF logout skipped:", e.message);
     }
-
-    function showLiffBanner() {
-        const liffUrl = "https://liff.line.me/" + myLiffId;
-        const banner = document.getElementById('liffBanner');
-        banner.style.display = 'block';
-        banner.innerHTML = `
-            <strong style="color:#00e676;">&#x26A0; แชร์ผ่าน PC ต้องเข้าผ่านลิงก์ LIFF</strong><br>
-            <span style="color:#a0c4e0;">กรุณาเปิดลิงก์นี้เพื่อยืนยันตัวตนกับ LINE:</span><br>
-            <a href="${liffUrl}" target="_blank"
-               style="display:inline-block; margin-top:8px; padding:7px 16px; background:#00c853;
-                      color:#fff; border-radius:6px; text-decoration:none; font-size:13px;">
-                เปิดหน้านี้ผ่าน LINE (LIFF)
-            </a>
-        `;
-    }
-
-    function handleLogout() {
-        try {
-            if (typeof liff !== "undefined" && liff.isInitialized && liff.isLoggedIn()) {
-                liff.logout();
-            }
-        } catch (e) {
-            console.warn("LIFF logout skipped:", e.message);
-        }
-        window.location.href = "LineLogout.php";
-    }
+    window.location.href = "LineLogout.php";
+}
 </script>
 </body>
 </html>
