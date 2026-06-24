@@ -50,11 +50,11 @@ $conn->close();
 <!DOCTYPE html>
 <html lang="th">
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PROJECT IDRIS - LINE Flex Message Creator & Share</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT IDRIS - LINE Flex Message Creator & Share</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         :root {
             --bg-dark:       #0b1622;
@@ -68,6 +68,7 @@ $conn->close();
             --text-muted:    #7a9abf;
             --chat-bg:       #1a2f4a;
         }
+
         * { box-sizing: border-box; }
 
         body {
@@ -75,8 +76,8 @@ $conn->close();
             margin: 0;
             padding: 0;
             color: var(--text-color);
-
-            /* 💡 ส่วนสำหรับรูปพื้นหลัง bg2.png */
+            
+            /* 💡 ส่วนที่เพิ่มเข้ามาใหม่สำหรับรูปพื้นหลัง bg2.png */
             background-image: url('bg2.png');
             background-size: cover;
             background-position: center;
@@ -85,6 +86,7 @@ $conn->close();
             background-color: #0b111e; /* สีสำรองระหว่างรอรูปโหลด */
             min-height: 100vh;
         }
+
 
         /* ===== NAVBAR ===== */
         .idris-navbar {
@@ -459,6 +461,7 @@ $conn->close();
     </div>
 </nav>
 
+
 <!-- Container หลักควบคุมหน้าเพจ (ใช้ display: flex แบ่งครึ่งหน้าจอซ้าย-ขวาอย่างอิสระ) -->
 <div style="display: flex; gap: 20px; padding: 20px; align-items: stretch;">
 
@@ -509,18 +512,6 @@ $conn->close();
                 
                 <div id="liffBanner" class="liff-banner"></div>
 
-            <!-- 📤 กล่องอัปโหลดรูปภาพจากเครื่องที่เพิ่มเข้ามาใหม่ -->
-            <label class="form-label-idris" style="color: #28a745; font-weight: bold;">Upload Image From Device</label>
-            <div style="position: relative; margin-bottom: 15px;">
-                <input type="file" id="myImageInput" accept="image/*" class="input-idris" style="cursor: pointer; padding: 10px;">
-                
-                <!-- ตัวหมุนโหลดแสดงสถานะ (Spinner) จะโผล่มาตอนกำลังส่งรูป -->
-                <div id="uploadSpinner" class="spinner-border text-success" role="status" style="display: none; width: 1.2rem; height: 1.2rem; position: absolute; right: 15px; top: 12px;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-
-            <!-- 🔗 ส่วนโครงสร้างเดิมของคุณ (เชื่อมต่อกันได้อย่างสมบูรณ์) -->
             <label class="form-label-idris">Image URL</label>
             <input type="url" class="input-idris" id="imageUrl" placeholder="https://example.com/image.jpg">
 
@@ -559,6 +550,7 @@ $conn->close();
     </div>
 
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -604,129 +596,65 @@ $conn->close();
         setTimeout(() => clearInterval(checkLiffInterval), 10000);
     });
 
-    // ================= ระบบอัปโหลดรูปภาพอัตโนมัติ (แก้ไขสมบูรณ์) =================
-    const imageInput = document.getElementById('myImageInput');
-    const imageUrlInput = document.getElementById('imageUrl');
-    const uploadSpinner = document.getElementById('uploadSpinner');
-    const IMGBB_API_KEY = '6e49812a4714b569b957e25e15e813c2';
+    function generatePreview() {
+        const imageUrl = document.getElementById("imageUrl").value.trim();
+        const targetUrl = document.getElementById("targetUrl").value.trim();
+        const ratio = document.getElementById("aspectRatio").value || "30:25";
 
-    if (imageInput) {
-        imageInput.addEventListener('change', function(event) {
-            const file = event.target.files[0]; // แก้ไขจาก files(0) เป็น files[0]
-            if (!file) return;
-
-            // แสดงสถานะกำลังโหลด
-            if (uploadSpinner) uploadSpinner.style.display = 'inline-block';
-            if (imageUrlInput) imageUrlInput.value = "กำลังอัปโหลดรูปภาพ กรุณารอซักครู่...";
-
-            const formData = new FormData();
-            formData.append('image', file);
-
-            // ส่งรูปภาพไปที่เว็บฝากรูปผ่าน API ของคุณ
-            fetch(`https://imgbb.com{IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (uploadSpinner) uploadSpinner.style.display = 'none';
-
-                if (result.success) {
-                    const directImageUrl = result.data.url;
-                    if (imageUrlInput) {
-                        imageUrlInput.value = directImageUrl; // วางลิงก์ที่ช่อง URL ทันที
-                    }
-                    // สั่งอัปเดตหน้าพรีวิวด้านซ้ายมือให้แสดงผลรูปภาพทันที
-                    generatePreview();
-                } else {
-                    alert('อัปโหลดล้มเหลว: ' + result.error.message);
-                    if (imageUrlInput) imageUrlInput.value = "";
-                }
-            })
-            .catch(error => {
-                if (uploadSpinner) uploadSpinner.style.display = 'none';
-                if (imageUrlInput) imageUrlInput.value = "";
-                console.error('Error:', error);
-                alert('ไม่สามารถติดต่อเซิร์ฟเวอร์อัปโหลดรูปภาพได้');
-            });
-        });
-    }
-});
-
-// ฟังก์ชันสร้างตัวอย่างภาพแสดงผล (Live Preview)
-function generatePreview() {
-    const imageUrl = document.getElementById("imageUrl").value.trim();
-    const targetUrl = document.getElementById("targetUrl").value.trim();
-    const ratio = document.getElementById("aspectRatio").value || "30:25";
-
-    // ถ้ายังไม่มีรูปภาพ ให้หยุดทำงานก่อน (ไม่แจ้ง Alert กวนใจผู้ใช้)
-    if (!imageUrl) return;
-
-    const img = document.getElementById("imagePreview");
-    const anchor = document.getElementById("previewAnchor");
-    const placeholder = document.getElementById("noImagePlaceholder");
-
-    if (img) img.src = imageUrl;
-    if (anchor && targetUrl) anchor.href = targetUrl;
-    
-    if (placeholder) placeholder.style.display = "none";
-    if (anchor) anchor.style.display = "block";
-
-    // คำนวณ Aspect Ratio อัตราส่วนภาพ
-    const parts = ratio.split(":");
-    if (parts.length === 2 && img) {
-        const w = parseFloat(parts[0]);
-        const h = parseFloat(parts[1]);
-        img.style.aspectRatio = (w > 0 && h > 0) ? `${w}/${h}` : "30/25";
-    }
-
-    updateTimestamp();
-
-    // สร้างโครงสร้างโค้ดสำหรับส่งหา LINE
-    dynamicFlexJson = {
-        type: "flex",
-        altText: "sent a photo",
-        contents: {
-            type: "bubble",
-            hero: {
-                type: "image",
-                url: imageUrl,
-                size: "full",
-                aspectRatio: ratio,
-                aspectMode: "cover"
-            }
+        if (!imageUrl || !targetUrl) {
+            alert("กรุณากรอกลิงก์รูปภาพและ Target Link");
+            return;
         }
-    };
 
-    // เพิ่ม Action Link หากมีการระบุลิงก์ปลายทางไว้
-    if (targetUrl) {
-        dynamicFlexJson.contents.hero.action = { type: "uri", uri: targetUrl };
+        const img = document.getElementById("imagePreview");
+        const anchor = document.getElementById("previewAnchor");
+        const placeholder = document.getElementById("noImagePlaceholder");
+
+        img.src = imageUrl;
+        anchor.href = targetUrl;
+        placeholder.style.display = "none";
+        anchor.style.display = "block";
+
+        const parts = ratio.split(":");
+        if (parts.length === 2) {
+            const w = parseFloat(parts[0]), h = parseFloat(parts[1]);
+            img.style.aspectRatio = (w > 0 && h > 0) ? `${w}/${h}` : "30/25";
+        }
+
+        updateTimestamp();
+
+        dynamicFlexJson = {
+            type: "flex",
+            altText: "sent a photo",
+            contents: {
+                type: "bubble",
+                hero: {
+                    type: "image",
+                    url: imageUrl,
+                    size: "full",
+                    aspectRatio: ratio,
+                    aspectMode: "cover",
+                    action: { type: "uri", uri: targetUrl }
+                }
+            }
+        };
+
+        document.getElementById("FlexCode").value = JSON.stringify(dynamicFlexJson, null, 2);
     }
 
-    const flexCodeEl = document.getElementById("FlexCode");
-    if (flexCodeEl) {
-        flexCodeEl.value = JSON.stringify(dynamicFlexJson, null, 2);
+    function clearFields() {
+        document.getElementById("imageUrl").value = "";
+        document.getElementById("targetUrl").value = "";
+        document.getElementById("aspectRatio").value = "30:25";
+        document.getElementById("FlexCode").value = "";
+        document.getElementById("previewAnchor").style.display = "none";
+        document.getElementById("imagePreview").src = "";
+        document.getElementById("noImagePlaceholder").style.display = "flex";
+        document.getElementById("previewAnchor").href = "#";
+        document.getElementById("chatTimestamp").textContent = "";
+        dynamicFlexJson = null;
     }
-}
 
-// ฟังก์ชันล้างค่าข้อมูลทั้งหมดบนฟอร์ม
-function clearFields() {
-    if (document.getElementById("imageUrl")) document.getElementById("imageUrl").value = "";
-    if (document.getElementById("targetUrl")) document.getElementById("targetUrl").value = "";
-    if (document.getElementById("aspectRatio")) document.getElementById("aspectRatio").value = "30:25";
-    if (document.getElementById("FlexCode")) document.getElementById("FlexCode").value = "";
-    if (document.getElementById("previewAnchor")) document.getElementById("previewAnchor").style.display = "none";
-    if (document.getElementById("imagePreview")) document.getElementById("imagePreview").src = "";
-    if (document.getElementById("noImagePlaceholder")) document.getElementById("noImagePlaceholder").style.display = "flex";
-    if (document.getElementById("myImageInput")) document.getElementById("myImageInput").value = "";
-    
-    const timestampEl = document.getElementById("chatTimestamp");
-    if (timestampEl) timestampEl.textContent = "";
-    
-    dynamicFlexJson = null;
-}
-
-// ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE ของผู้ใช้งาน
     async function shareFlex() {
         generatePreview();
         if (!dynamicFlexJson) {
@@ -792,4 +720,3 @@ function clearFields() {
 </script>
 </body>
 </html>
-
