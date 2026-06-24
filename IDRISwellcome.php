@@ -578,7 +578,7 @@ function updateTimestamp() {
     }
 }
 
-// ควบคุมระบบให้เริ่มทำงานเมื่อโครงสร้างหน้าเว็บโหลดพร้อมใช้งาน
+// ระบบเริ่มต้นทำงานเมื่อโหลดหน้าเว็บเสร็จสิ้น
 document.addEventListener("DOMContentLoaded", function () {
     updateTimestamp();
 
@@ -609,7 +609,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 300);
     setTimeout(() => clearInterval(checkLiffInterval), 10000);
 
-    // ================= [แก้ไขแก้ไขอาร์เรย์ไฟล์รูปภาพให้ถูกต้อง] ระบบอัปโหลดรูปภาพอัตโนมัติ =================
+    // ================= [แก้ไขแก้ปัญหา Failed to fetch ด้วย Base64] ระบบอัปโหลดรูปภาพ =================
     const imageInput = document.getElementById('myImageInput');
     const imageUrlInput = document.getElementById('imageUrl');
     const uploadSpinner = document.getElementById('uploadSpinner');
@@ -620,48 +620,61 @@ document.addEventListener("DOMContentLoaded", function () {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            // ✅ บังคับเจาะจงดึงไฟล์ภาพลำดับแรกสุด [0] เพื่อส่งค่าโครงสร้างไบนารีที่ถูกต้อง
-            const file = files[0]; 
+            const file = files[0];
 
-            // เปลี่ยนสถานะแจ้งเตือนในฟอร์มเครื่องมือ
+            // แสดงสถานะหมุนโหลด
             if (uploadSpinner) uploadSpinner.style.display = 'inline-block';
-            if (imageUrlInput) imageUrlInput.value = "กำลังอัปโหลดรูปภาพ กรุณารอซักครู่...";
+            if (imageUrlInput) imageUrlInput.value = "กำลังประมวลผลไฟล์ภาพและอัปโหลด...";
 
-            const formData = new FormData();
-            formData.append('image', file);
+            // 1. ใช้ FileReader แปลงไฟล์ภาพให้กลายเป็นข้อความ Base64 ก่อนส่ง (แก้ปัญหา CORS / Network Block)
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                // ดึงเฉพาะสายอักขระข้อความภาพตัดเอา Header เริ่มต้นออก
+                const base64Data = reader.result.split(',')[1];
 
-            // ส่งคำสั่งแบบ POST Request ไปประมวลผลที่คลาวด์เซิร์ฟเวอร์
-            fetch(`https://imgbb.com{IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('เครือข่ายตอบกลับไม่ถูกต้อง สถานะ: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(result => {
-                if (uploadSpinner) uploadSpinner.style.display = 'none';
+                const formData = new FormData();
+                formData.append('image', base64Data); // ส่งข้อมูลแบบข้อความ Base64 แทนไฟล์สด
 
-                if (result.success) {
-                    const directImageUrl = result.data.url;
-                    if (imageUrlInput) {
-                        imageUrlInput.value = directImageUrl; // กรอกลิงก์ตรง .jpg/.png ใส่กล่องรับ Image URL ทันที
+                // 2. ยิงคำสั่งส่งข้อความภาพผ่าน HTTP POST ไปยังปลายทาง
+                fetch(`https://imgbb.com{IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('เซิร์ฟเวอร์ตอบกลับรหัส: ' + response.status);
                     }
-                    // อัปเดตการแสดงผลบนกรอบ Live Preview ด้านซ้ายโดยอัตโนมัติ
-                    generatePreview();
-                } else {
-                    alert('อัปโหลดล้มเหลวจากผู้ให้บริการ: ' + (result.error ? result.error.message : 'ไม่ทราบสาเหตุ'));
+                    return response.json();
+                })
+                .then(result => {
+                    if (uploadSpinner) uploadSpinner.style.display = 'none';
+
+                    if (result.success) {
+                        const directImageUrl = result.data.url;
+                        if (imageUrlInput) {
+                            imageUrlInput.value = directImageUrl; // วางลิงก์รูปภาพในช่องอัตโนมัติ
+                        }
+                        // อัปเดตพรีวิวภาพจำลองทันที
+                        generatePreview();
+                    } else {
+                        alert('อัปโหลดล้มเหลว: ' + (result.error ? result.error.message : 'เกิดข้อผิดพลาด'));
+                        if (imageUrlInput) imageUrlInput.value = "";
+                    }
+                })
+                .catch(error => {
+                    if (uploadSpinner) uploadSpinner.style.display = 'none';
                     if (imageUrlInput) imageUrlInput.value = "";
-                }
-            })
-            .catch(error => {
+                    console.error('Fetch Error:', error);
+                    alert('ข้อผิดพลาดเครือข่าย: ' + error.message);
+                });
+            };
+
+            reader.onerror = function (error) {
                 if (uploadSpinner) uploadSpinner.style.display = 'none';
                 if (imageUrlInput) imageUrlInput.value = "";
-                console.error('Error Details:', error);
-                alert('ไม่สามารถติดต่อเซิร์ฟเวอร์อัปโหลดรูปภาพได้ เนื่องจาก: ' + error.message);
-            });
+                alert('ไม่สามารถอ่านไฟล์ภาพจากเครื่องได้');
+            };
         });
     }
 });
@@ -735,7 +748,7 @@ function clearFields() {
     dynamicFlexJson = null;
 }
 
-// ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE
+// ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE ของผู้ใช้งาน
 async function shareFlex() {
     generatePreview();
     if (!dynamicFlexJson) {
