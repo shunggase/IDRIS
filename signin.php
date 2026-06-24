@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'])) {
         } else {
             echo "<script>
                 alert('รหัสผ่านไม่ถูกต้อง หรือไม่พบชื่อผู้ใช้นี้ในระบบ!');
-                window.location.href = 'signin.php';
+                window.location.href = 'index.php';
             </script>";
             exit();
         }
