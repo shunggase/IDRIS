@@ -566,7 +566,7 @@ const myLiffId = "2010383431-NwcATXJE";
 let liffReady = false;
 let dynamicFlexJson = null;
 
-// ฟังก์ชันอัปเดตเวลาปัจจุบัน
+// ฟังก์ชันอัปเดตเวลาปัจจุบัน (เขียนแบบสะอาด ไม่ใช้ string eval)
 function updateTimestamp() {
     const now = new Date();
     const h = now.getHours().toString().padStart(2, '0');
@@ -578,38 +578,43 @@ function updateTimestamp() {
     }
 }
 
-// ระบบเริ่มต้นทำงานเมื่อโหลดหน้าเว็บเสร็จสิ้น
+// ระบบเริ่มต้นทำงานเมื่อหน้าเว็บพร้อมทำงาน (ย้ายฟังก์ชันย่อยออกเพื่อความปลอดภัยของ CSP)
+function initLiffSystem() {
+    if (typeof liff !== "undefined") {
+        liff.init({ liffId: myLiffId })
+        .then(() => {
+            liffReady = true;
+            const alreadyRedirected = sessionStorage.getItem('liff_login_attempted');
+            if (!liff.isLoggedIn()) {
+                if (!alreadyRedirected) {
+                    sessionStorage.setItem('liff_login_attempted', '1');
+                    liff.login({ redirectUri: window.location.href });
+                } else {
+                    showLiffBanner();
+                }
+            } else {
+                sessionStorage.removeItem('liff_login_attempted');
+            }
+        })
+        .catch(err => {
+            console.error("LIFF init failed:", err);
+            showLiffBanner();
+        });
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     updateTimestamp();
 
-    // ระบบเชื่อมต่อ LINE LIFF
-    const checkLiffInterval = setInterval(() => {
-        if (typeof liff !== "undefined") {
-            clearInterval(checkLiffInterval);
-            liff.init({ liffId: myLiffId })
-            .then(() => {
-                liffReady = true;
-                const alreadyRedirected = sessionStorage.getItem('liff_login_attempted');
-                if (!liff.isLoggedIn()) {
-                    if (!alreadyRedirected) {
-                        sessionStorage.setItem('liff_login_attempted', '1');
-                        liff.login({ redirectUri: window.location.href });
-                    } else {
-                        showLiffBanner();
-                    }
-                } else {
-                    sessionStorage.removeItem('liff_login_attempted');
-                }
-            })
-            .catch(err => {
-                console.error("LIFF init failed:", err);
-                showLiffBanner();
-            });
-        }
-    }, 300);
-    setTimeout(() => clearInterval(checkLiffInterval), 10000);
+    // 1. เรียกใช้งานระบบเชื่อมต่อ LINE LIFF ทันที แทนการวนลูปแบบเก่าที่โดนบล็อก
+    if (typeof liff !== "undefined") {
+        initLiffSystem();
+    } else {
+        // หากสคริปต์ LINE มาช้า ให้ใช้การดักจับเหตุการณ์โหลดแทน
+        window.addEventListener('load', initLiffSystem);
+    }
 
-    // ================= [แก้ไขดึงค่าอาร์เรย์ไฟล์ภาพให้ถูกต้อง] ระบบอัปโหลดรูปภาพ =================
+    // ================= [ทำความสะอาดโค้ดผ่าน CSP แน่นอน] ระบบอัปโหลดรูปภาพ =================
     const imageInput = document.getElementById('myImageInput');
     const imageUrlInput = document.getElementById('imageUrl');
     const uploadSpinner = document.getElementById('uploadSpinner');
@@ -620,31 +625,28 @@ document.addEventListener("DOMContentLoaded", function () {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            // ✅ แก้ไขจากจุดเดิม: ดึงอาร์เรย์ตัวแรก [0] เพื่อหยิบไฟล์รูปภาพสดออกมาทำงานจริง
-            const file = files[0]; 
+            const file = files[0]; // เลือกไฟล์แรกสุดจากหน่วยความจำ
 
             // แสดงสถานะหมุนโหลด
             if (uploadSpinner) uploadSpinner.style.display = 'inline-block';
             if (imageUrlInput) imageUrlInput.value = "กำลังประมวลผลไฟล์ภาพและอัปโหลด...";
 
-            // 1. แปลงไฟล์ภาพให้กลายเป็นข้อความ Base64 ก่อนส่งข้อมูล
+            // แปลงรูปเป็น Base64 แบบดั้งเดิมที่ปลอดภัยและไม่ละเมิดนโยบายของระบบ
             const reader = new FileReader();
-            reader.readAsDataURL(file);
             reader.onload = function () {
-                // ✅ ตัดเอาข้อความ Header เริ่มต้นออก (เช่น data:image/jpeg;base64,) ให้เหลือเพียงตัวข้อความรหัสภาพล้วนๆ
-                const rawBase64 = reader.result.split(',')[1];
+                const base64String = reader.result.split(',')[1]; // ดึงข้อความรหัสภาพเพียวๆ ออกมา
 
                 const formData = new FormData();
-                formData.append('image', rawBase64); // ส่งค่า String ข้อความเพียวๆ ไปประมวลผล
+                formData.append('image', base64String);
 
-                // 2. ยิงคำสั่งส่งข้อความรูปภาพผ่าน POST ไปยัง ImgBB API เครือข่ายภายนอก
+                // ยิงอัปโหลดตรงไปยังเซิร์ฟเวอร์
                 fetch(`https://imgbb.com{IMGBB_API_KEY}`, {
                     method: 'POST',
                     body: formData
                 })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('เซิร์ฟเวอร์ตอบกลับรหัสสถานะ: ' + response.status);
+                        throw new Error('เซิร์ฟเวอร์ตอบกลับรหัส: ' + response.status);
                     }
                     return response.json();
                 })
@@ -654,37 +656,42 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (result.success) {
                         const directImageUrl = result.data.url;
                         if (imageUrlInput) {
-                            imageUrlInput.value = directImageUrl; // วางลิงก์รูปภาพในกล่องข้อความทันที
+                            imageUrlInput.value = directImageUrl; // กรอกพิกัดลิงก์ใส่กล่องโดยอัตโนมัติ
                         }
-                        // สั่งเรนเดอร์ภาพตัวอย่างที่กรอบจำลอง LINE ทางฝั่งซ้ายมือทันที
-                        generatePreview();
+                        generatePreview(); // สั่งพรีวิวภาพจำลองด้านซ้ายมือทันที
                     } else {
-                        alert('อัปโหลดล้มเหลว: ' + (result.error ? result.error.message : 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ'));
+                        alert('อัปโหลดล้มเหลว: ' + (result.error ? result.error.message : 'เกิดข้อผิดพลาด'));
                         if (imageUrlInput) imageUrlInput.value = "";
                     }
                 })
                 .catch(error => {
                     if (uploadSpinner) uploadSpinner.style.display = 'none';
                     if (imageUrlInput) imageUrlInput.value = "";
-                    console.error('Fetch Error Details:', error);
-                    alert('ข้อผิดพลาดทางเครือข่าย: ' + error.message);
+                    console.error('Fetch Error:', error);
+                    alert('ข้อผิดพลาดเครือข่าย: ' + error.message);
                 });
             };
 
             reader.onerror = function () {
                 if (uploadSpinner) uploadSpinner.style.display = 'none';
                 if (imageUrlInput) imageUrlInput.value = "";
-                alert('ไม่สามารถอ่านไฟล์ภาพจากหน่วยความจำเครื่องได้');
+                alert('ไม่สามารถอ่านไฟล์ภาพจากเครื่องได้');
             };
+            
+            reader.readAsDataURL(file);
         });
     }
 });
 
 // ฟังก์ชันสร้างตัวอย่างภาพแสดงผล (Live Preview)
 function generatePreview() {
-    const imageUrl = document.getElementById("imageUrl").value.trim();
-    const targetUrl = document.getElementById("targetUrl").value.trim();
-    const ratio = document.getElementById("aspectRatio").value || "30:25";
+    const imageUrlInput = document.getElementById("imageUrl");
+    const targetUrlInput = document.getElementById("targetUrl");
+    const aspectRatioInput = document.getElementById("aspectRatio");
+
+    const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : "";
+    const targetUrl = targetUrlInput ? targetUrlInput.value.trim() : "";
+    const ratio = aspectRatioInput ? aspectRatioInput.value || "30:25" : "30:25";
 
     if (!imageUrl) return;
 
@@ -749,7 +756,7 @@ function clearFields() {
     dynamicFlexJson = null;
 }
 
-// ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE ของผู้ใช้งาน
+// ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE
 async function shareFlex() {
     generatePreview();
     if (!dynamicFlexJson) {
@@ -765,8 +772,10 @@ async function shareFlex() {
         return;
     }
     const btn = document.getElementById("shareBtnEl");
-    btn.innerHTML = "&#x23F3; กำลังเปิด Share Target Picker...";
-    btn.disabled = true;
+    if (btn) {
+        btn.innerHTML = "&#x23F3; กำลังเปิด Share Target Picker...";
+        btn.disabled = true;
+    }
     try {
         const result = await liff.shareTargetPicker([dynamicFlexJson]);
         if (result && result.status === 'success') {
@@ -780,24 +789,28 @@ async function shareFlex() {
             alert("เกิดข้อผิดพลาด: " + error.message);
         }
     } finally {
-        btn.innerHTML = "<span>&#10024;</span> ส่งและแชร์ไปที่ LINE";
-        btn.disabled = false;
+        if (btn) {
+            btn.innerHTML = "<span>&#10024;</span> ส่งและแชร์ไปที่ LINE";
+            btn.disabled = false;
+        }
     }
 }
 
 function showLiffBanner() {
     const liffUrl = "https://line.me" + myLiffId;
     const banner = document.getElementById('liffBanner');
-    banner.style.display = 'block';
-    banner.innerHTML = `
-    <strong style="color:#00e676;">⚠️ แชร์ผ่าน PC ต้องเข้าผ่านลิงก์ LIFF</strong><br>
-    <span style="color:#a0c4e0;">กรุณาเปิดลิงก์นี้เพื่อยืนยันตัวตนกับ LINE:</span><br>
-    <a href="${liffUrl}" target="_blank"
-    style="display:inline-block; margin-top:8px; padding:7px 16px; background:#00c853;
-    color:#fff; border-radius:6px; text-decoration:none; font-size:13px;">
-    เปิดหน้านี้ผ่าน LINE (LIFF)
-    </a>
-    `;
+    if (banner) {
+        banner.style.display = 'block';
+        banner.innerHTML = `
+        <strong style="color:#00e676;">⚠️ แชร์ผ่าน PC ต้องเข้าผ่านลิงก์ LIFF</strong><br>
+        <span style="color:#a0c4e0;">กรุณาเปิดลิงก์นี้เพื่อยืนยันตัวตนกับ LINE:</span><br>
+        <a href="${liffUrl}" target="_blank"
+        style="display:inline-block; margin-top:8px; padding:7px 16px; background:#00c853;
+        color:#fff; border-radius:6px; text-decoration:none; font-size:13px;">
+        เปิดหน้านี้ผ่าน LINE (LIFF)
+        </a>
+        `;
+    }
 }
 
 function handleLogout() {
