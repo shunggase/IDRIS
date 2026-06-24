@@ -609,7 +609,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 300);
     setTimeout(() => clearInterval(checkLiffInterval), 10000);
 
-    // ================= [แก้ไขแก้ปัญหา Failed to fetch ด้วย Base64] ระบบอัปโหลดรูปภาพ =================
+    // ================= [แก้ไขดึงค่าอาร์เรย์ไฟล์ภาพให้ถูกต้อง] ระบบอัปโหลดรูปภาพ =================
     const imageInput = document.getElementById('myImageInput');
     const imageUrlInput = document.getElementById('imageUrl');
     const uploadSpinner = document.getElementById('uploadSpinner');
@@ -620,30 +620,31 @@ document.addEventListener("DOMContentLoaded", function () {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            const file = files[0];
+            // ✅ แก้ไขจากจุดเดิม: ดึงอาร์เรย์ตัวแรก [0] เพื่อหยิบไฟล์รูปภาพสดออกมาทำงานจริง
+            const file = files[0]; 
 
             // แสดงสถานะหมุนโหลด
             if (uploadSpinner) uploadSpinner.style.display = 'inline-block';
             if (imageUrlInput) imageUrlInput.value = "กำลังประมวลผลไฟล์ภาพและอัปโหลด...";
 
-            // 1. ใช้ FileReader แปลงไฟล์ภาพให้กลายเป็นข้อความ Base64 ก่อนส่ง (แก้ปัญหา CORS / Network Block)
+            // 1. แปลงไฟล์ภาพให้กลายเป็นข้อความ Base64 ก่อนส่งข้อมูล
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function () {
-                // ดึงเฉพาะสายอักขระข้อความภาพตัดเอา Header เริ่มต้นออก
-                const base64Data = reader.result.split(',')[1];
+                // ✅ ตัดเอาข้อความ Header เริ่มต้นออก (เช่น data:image/jpeg;base64,) ให้เหลือเพียงตัวข้อความรหัสภาพล้วนๆ
+                const rawBase64 = reader.result.split(',')[1];
 
                 const formData = new FormData();
-                formData.append('image', base64Data); // ส่งข้อมูลแบบข้อความ Base64 แทนไฟล์สด
+                formData.append('image', rawBase64); // ส่งค่า String ข้อความเพียวๆ ไปประมวลผล
 
-                // 2. ยิงคำสั่งส่งข้อความภาพผ่าน HTTP POST ไปยังปลายทาง
+                // 2. ยิงคำสั่งส่งข้อความรูปภาพผ่าน POST ไปยัง ImgBB API เครือข่ายภายนอก
                 fetch(`https://imgbb.com{IMGBB_API_KEY}`, {
                     method: 'POST',
                     body: formData
                 })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('เซิร์ฟเวอร์ตอบกลับรหัส: ' + response.status);
+                        throw new Error('เซิร์ฟเวอร์ตอบกลับรหัสสถานะ: ' + response.status);
                     }
                     return response.json();
                 })
@@ -653,27 +654,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (result.success) {
                         const directImageUrl = result.data.url;
                         if (imageUrlInput) {
-                            imageUrlInput.value = directImageUrl; // วางลิงก์รูปภาพในช่องอัตโนมัติ
+                            imageUrlInput.value = directImageUrl; // วางลิงก์รูปภาพในกล่องข้อความทันที
                         }
-                        // อัปเดตพรีวิวภาพจำลองทันที
+                        // สั่งเรนเดอร์ภาพตัวอย่างที่กรอบจำลอง LINE ทางฝั่งซ้ายมือทันที
                         generatePreview();
                     } else {
-                        alert('อัปโหลดล้มเหลว: ' + (result.error ? result.error.message : 'เกิดข้อผิดพลาด'));
+                        alert('อัปโหลดล้มเหลว: ' + (result.error ? result.error.message : 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ'));
                         if (imageUrlInput) imageUrlInput.value = "";
                     }
                 })
                 .catch(error => {
                     if (uploadSpinner) uploadSpinner.style.display = 'none';
                     if (imageUrlInput) imageUrlInput.value = "";
-                    console.error('Fetch Error:', error);
-                    alert('ข้อผิดพลาดเครือข่าย: ' + error.message);
+                    console.error('Fetch Error Details:', error);
+                    alert('ข้อผิดพลาดทางเครือข่าย: ' + error.message);
                 });
             };
 
-            reader.onerror = function (error) {
+            reader.onerror = function () {
                 if (uploadSpinner) uploadSpinner.style.display = 'none';
                 if (imageUrlInput) imageUrlInput.value = "";
-                alert('ไม่สามารถอ่านไฟล์ภาพจากเครื่องได้');
+                alert('ไม่สามารถอ่านไฟล์ภาพจากหน่วยความจำเครื่องได้');
             };
         });
     }
