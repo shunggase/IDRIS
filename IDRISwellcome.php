@@ -566,11 +566,11 @@ const myLiffId = "2010383431-NwcATXJE";
 let liffReady = false;
 let dynamicFlexJson = null;
 
-// แสดงเวลาปัจจุบัน
+// ฟังก์ชันอัปเดตเวลาปัจจุบัน
 function updateTimestamp() {
     const now = new Date();
-    const h = now.getHours().toString().padStart(2,'0');
-    const m = now.getMinutes().toString().padStart(2,'0');
+    const h = now.getHours().toString().padStart(2, '0');
+    const m = now.getMinutes().toString().padStart(2, '0');
     const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
     const timestampEl = document.getElementById('chatTimestamp');
     if (timestampEl) {
@@ -578,11 +578,11 @@ function updateTimestamp() {
     }
 }
 
-// ⚠️ มัดรวมคำสั่งควบคุมปุ่มทั้งหมดให้ทำงานหลังจากบราวเซอร์สร้างหน้าเว็บเสร็จสมบูรณ์
+// ควบคุมระบบให้เริ่มทำงานเมื่อโครงสร้างหน้าเว็บโหลดพร้อมใช้งาน
 document.addEventListener("DOMContentLoaded", function () {
     updateTimestamp();
 
-    // 1. ระบบเชื่อมต่อ LINE LIFF
+    // ระบบเชื่อมต่อ LINE LIFF
     const checkLiffInterval = setInterval(() => {
         if (typeof liff !== "undefined") {
             clearInterval(checkLiffInterval);
@@ -609,7 +609,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 300);
     setTimeout(() => clearInterval(checkLiffInterval), 10000);
 
-    // ================= [ย้ายตำแหน่งเข้าล็อกเรียบร้อย] ระบบอัปโหลดรูปภาพอัตโนมัติ =================
+    // ================= [แก้ไขแก้ไขอาร์เรย์ไฟล์รูปภาพให้ถูกต้อง] ระบบอัปโหลดรูปภาพอัตโนมัติ =================
     const imageInput = document.getElementById('myImageInput');
     const imageUrlInput = document.getElementById('imageUrl');
     const uploadSpinner = document.getElementById('uploadSpinner');
@@ -620,41 +620,47 @@ document.addEventListener("DOMContentLoaded", function () {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            // ดึงไฟล์ภาพลำดับแรกสุด [0] ออกมาทำงาน
-            const file = files[0];
+            // ✅ บังคับเจาะจงดึงไฟล์ภาพลำดับแรกสุด [0] เพื่อส่งค่าโครงสร้างไบนารีที่ถูกต้อง
+            const file = files[0]; 
 
-            // แสดงสถานะกำลังโหลด
+            // เปลี่ยนสถานะแจ้งเตือนในฟอร์มเครื่องมือ
             if (uploadSpinner) uploadSpinner.style.display = 'inline-block';
             if (imageUrlInput) imageUrlInput.value = "กำลังอัปโหลดรูปภาพ กรุณารอซักครู่...";
 
             const formData = new FormData();
             formData.append('image', file);
 
-            // ส่งรูปภาพไปที่เว็บฝากรูปผ่าน API ของคุณ
+            // ส่งคำสั่งแบบ POST Request ไปประมวลผลที่คลาวด์เซิร์ฟเวอร์
             fetch(`https://imgbb.com{IMGBB_API_KEY}`, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('เครือข่ายตอบกลับไม่ถูกต้อง สถานะ: ' + response.status);
+                }
+                return response.json();
+            })
             .then(result => {
                 if (uploadSpinner) uploadSpinner.style.display = 'none';
+
                 if (result.success) {
                     const directImageUrl = result.data.url;
                     if (imageUrlInput) {
-                        imageUrlInput.value = directImageUrl; // วางลิงก์ที่ช่อง URL ทันที
+                        imageUrlInput.value = directImageUrl; // กรอกลิงก์ตรง .jpg/.png ใส่กล่องรับ Image URL ทันที
                     }
-                    // สั่งอัปเดตหน้าพรีวิวด้านซ้ายมือให้แสดงผลรูปภาพทันที
+                    // อัปเดตการแสดงผลบนกรอบ Live Preview ด้านซ้ายโดยอัตโนมัติ
                     generatePreview();
                 } else {
-                    alert('อัปโหลดล้มเหลว: ' + result.error.message);
+                    alert('อัปโหลดล้มเหลวจากผู้ให้บริการ: ' + (result.error ? result.error.message : 'ไม่ทราบสาเหตุ'));
                     if (imageUrlInput) imageUrlInput.value = "";
                 }
             })
             .catch(error => {
                 if (uploadSpinner) uploadSpinner.style.display = 'none';
                 if (imageUrlInput) imageUrlInput.value = "";
-                console.error('Error:', error);
-                alert('ไม่สามารถติดต่อเซิร์ฟเวอร์อัปโหลดรูปภาพได้');
+                console.error('Error Details:', error);
+                alert('ไม่สามารถติดต่อเซิร์ฟเวอร์อัปโหลดรูปภาพได้ เนื่องจาก: ' + error.message);
             });
         });
     }
@@ -666,7 +672,6 @@ function generatePreview() {
     const targetUrl = document.getElementById("targetUrl").value.trim();
     const ratio = document.getElementById("aspectRatio").value || "30:25";
 
-    // ถ้ายังไม่มีรูปภาพ ให้หยุดทำงานก่อน (ไม่แจ้ง Alert กวนใจผู้ใช้)
     if (!imageUrl) return;
 
     const img = document.getElementById("imagePreview");
@@ -679,7 +684,6 @@ function generatePreview() {
     if (placeholder) placeholder.style.display = "none";
     if (anchor) anchor.style.display = "block";
 
-    // คำนวณ Aspect Ratio อัตราส่วนภาพ
     const parts = ratio.split(":");
     if (parts.length === 2 && img) {
         const w = parseFloat(parts[0]);
@@ -689,7 +693,6 @@ function generatePreview() {
 
     updateTimestamp();
 
-    // สร้างโครงสร้างโค้ดสำหรับส่งหา LINE
     dynamicFlexJson = {
         type: "flex",
         altText: "sent a photo",
@@ -705,7 +708,6 @@ function generatePreview() {
         }
     };
 
-    // เพิ่ม Action Link หากมีการระบุลิงก์ปลายทางไว้
     if (targetUrl) {
         dynamicFlexJson.contents.hero.action = { type: "uri", uri: targetUrl };
     }
@@ -733,7 +735,7 @@ function clearFields() {
     dynamicFlexJson = null;
 }
 
-// ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE ของผู้ใช้งาน
+// ฟังก์ชันส่งและแชร์ข้อมูลไปยัง LINE
 async function shareFlex() {
     generatePreview();
     if (!dynamicFlexJson) {
