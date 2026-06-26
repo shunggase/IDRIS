@@ -60,7 +60,7 @@ if (isset($_POST['submit_register'])) { // เปลี่ยนชื่อป�
 </head>
 <body>
     <video autoplay muted loop playsinline id="bg-video">
-        <source src="IDRISVIDEO2.mp4" type="video/mp4">
+        <source src="IDRIS_VIDEO2.mp4" type="video/mp4">
     </video>
 
     <header>
