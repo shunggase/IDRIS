@@ -31,10 +31,6 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     justify-content: space-between;
-    background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
 }
 
 .navbar .hamburger-btn {
