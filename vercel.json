@@ -6,13 +6,13 @@
       "use": "vercel-php@0.8.0"
     },
     {
-      "src": "**/*.{css,js,png,jpg,jpeg,svg,gif}",
+      "src": "**/*.{css,js,png,jpg,jpeg,svg,gif,mp4,webm,ogg}",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)\\.(css|js|png|jpg|jpeg|svg|gif)",
+      "src": "/(.*)\\.(css|js|png|jpg|jpeg|svg|gif|mp4|webm|ogg)",
       "dest": "/$1.$2"
     },
     {
