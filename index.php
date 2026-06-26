@@ -59,10 +59,6 @@ if (isset($_POST['submit_register'])) { // เปลี่ยนชื่อป�
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video">
-        <source src="video.mp4" type="video/mp4">
-    </video>
-
     <header>
         <nav class="navbar">
             <span class="hamburger-btn material-symbols-rounded">menu</span>
